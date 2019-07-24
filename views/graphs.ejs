@@ -1,0 +1,490 @@
+<% include partials/header.ejs %>
+
+
+        <div class="world-background">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="rate-box">
+                            <div class="container">
+                                <h1 class="world-msg col-lg-12">Foreign Exchange Graphs</h1>
+
+                                <a href="javascript:history.back()" style="position: absolute; top: 35px; color: darkslateblue; font-size: 25px;"><i class="fas fa-angle-double-left back-button"></i></a>
+
+                                <div style = "margin-bottom: 30;"></div>
+                                
+                                <h3 class="chart-title col-lg-12"><img src="/Flags/<%= currency_code %>.png" alt="" height=28 style="margin-bottom:1px; margin-right:5px; box-shadow: 0px 1px 3px 1px rgba(0,0,0,0.15);"></img> - <img src="/Flags/<%= exchange_code %>.png" alt="" height=28 style="margin-bottom:1px; margin-right:5px; box-shadow: 0px 1px 3px 1px rgba(0,0,0,0.15);"></img></h3>                                    
+
+                                <div style = "margin-bottom: 30px;"></div>
+
+                                
+                                <h3 class="chart-title col-lg-12">Candlestick Chart <%= currency_code%> to <%= exchange_code%> <%= rates_or_prices%></h3>
+
+
+                                <div id="candleStickChart" style = "height: 500px; width: 100%;">
+                                    <svg></svg>
+                                </div>
+
+                                <div style = "margin-bottom: 60px;"></div>
+
+
+
+
+
+
+                                
+                                <h3 class="chart-title col-lg-12">Hourly Chart <%= currency_code%> to <%= exchange_code%> <%= rates_or_prices%></h3>
+
+                                <div id="hourlyChart" style = "height: 400px; width: 100%;">
+                                    <svg></svg>
+                                </div>
+
+                                <div class="slidecontainer" style="margin: auto;">
+                                    <p style="color: darkslateblue; margin-bottom: 0; display:inline-block;">Range: Max</p>
+                                    <p style="color: darkslateblue; margin-bottom: 0; display:inline-block; float: right;">Min</p>
+                                    <input class="slider" type="range" id="hourly-sliderLowEnd" min="0" max="10" value="0" oninput="updateHourlyChartLowEnd(this.value);"/>
+                                    <input class="slider" type="range" id="hourly-sliderHighEnd" min="0" max="10" value="10" oninput="updateHourlyChartHighEnd(this.value);"/>
+                                </div>
+
+                                <div style = "margin-bottom: 60px;"></div>
+
+
+
+
+                                
+                                <h3 class="chart-title col-lg-12">Daily Chart <%= currency_code%> to <%= exchange_code%> <%= rates_or_prices%></h3>
+
+                                <div id="dailyChart" style = "height: 400px; width: 100%;">
+                                    <svg></svg>
+                                </div>
+
+                                <div class="slidecontainer" style="margin: auto;">
+                                    <p style="color: darkslateblue; margin-bottom: 0; display:inline-block;">Range: Max</p>
+                                    <p style="color: darkslateblue; margin-bottom: 0; display:inline-block; float: right;">Min</p>
+                                    <input class="slider" type="range" id="daily-sliderLowEnd" min="0" max="20" value="0" oninput="updateDailyChartLowEnd(this.value);"/>
+                                    <input class="slider" type="range" id="daily-sliderHighEnd" min="0" max="20" value="20" oninput="updateDailyChartHighEnd(this.value);"/>
+                                </div>
+
+                                <div style = "margin-bottom: 60px;"></div>
+
+
+
+
+                                
+                                <h3 class="chart-title col-lg-12">Past Performance Hourly</h3>
+
+                                <div id="pastPerfHourlyChart" style = "height: 400px; width: 100%;">
+                                    <svg></svg>
+                                </div>
+
+                                <div style = "margin-bottom: 60px;"></div>
+
+
+
+
+
+                                <h3 class="chart-title col-lg-12">Past Performance Table</h3>
+
+                                <div class="row">
+                                    <% for(var i = 0; i < data[4].length; i++) { %>
+                                        <div class="col-sm-6 col-md-4 col-xl-2" style="heigh: 20px; border: 1px solid black;">
+                                            <div style="text-align: center; font-weight: bold; color: darkslateblue; padding-top: 10px;"><% if (i == 0) { %>3 Days<% } else if (i == 1) { %>1 Week<% } else if (i == 2) { %>1 Month<% } else if (i == 3) { %>3 Months<% } else if (i == 4) { %>1 Year<% } else if (i == 5) { %>5 Years<% } %></div>
+                                            <table style="width:100%">
+                                                <tr>
+                                                    <th></th>
+                                                    <th style="text-align: left;">Code</th> 
+                                                    <th></th>
+                                                    <th style="text-align: right;">Change</th>
+                                                </tr>
+                                                <% for(var j = 0; j < data[4][i].length; j++) { %>
+                                                    <tr <% if (data[4][i][j].exchange == exchange_code) { %> style="background-color: lightgray;" <% } %> >
+                                                        <td style="text-align:left; content-align: bottom; font-weight: 400; font-size: 14px;"><%= j + 1 %>.</td>
+                                                        <td style="text-align:left; font-weight: 600;"><%= data[4][i][j].exchange %></td> 
+                                                        <td style="text-align:right;"><% if(data[4][i][j].diff < 0) { %> <img src="/Flags/down_arrow.png" alt="" height=11></img> <% } else if(data[4][i][j].diff == 0) { %> <img src="/Flags/equal_sign.png" alt="" height=9></img> <% } else if(data[4][i][j].diff > 0) { %> <img src="/Flags/up_arrow.png" alt="" height=11></img> <% } %></td>
+                                                        <td style="text-align:right; content-align: bottom; font-weight: 600; font-size: 14px;"><%= data[4][i][j].diff %>%</td>
+                                                    </tr>
+                                                <% } %>
+                                            </table>
+                                        </div>
+
+                                    <% } %>
+                                </div>
+
+                                <div style = "margin-bottom: 60px;"></div>
+
+
+
+                                <!-- <h5><%= data[2].length %></h5> -->
+
+
+                                <div style="display: none;" id="base_curr"><%= currency_code%></div>
+                                <div style="display: none;" id="exch_curr"><%= exchange_code%></div>
+                                
+                                <div style="display: none;" id="candleStickChartDV"><%= data[0] %></div>
+                                <div style="display: none;" id="hourlyChartDV"><%= data[1] %></div>
+                                <div style="display: none;" id="dailyChartDV"><%= data[2] %></div>
+                                <div style="display: none;" id="pastPerfHourlyChartDV"><%= data[3] %></div>
+                                
+
+                            </div>
+                        </div>
+                    </div>
+                </div>    
+            </div>
+        </div>
+
+
+
+        <script>
+        
+
+            //document.getElementById("baseCurrencySelector").value = document.getElementById("base_curr").innerHTML;
+        
+        
+            function post(path, params, method) {
+                method = method || "post"; // Set method to post by default if not specified.
+            
+                // The rest of this code assumes you are not using a library.
+                // It can be made less wordy if you use one.
+                var form = document.createElement("form");
+                form.setAttribute("method", method);
+                form.setAttribute("action", path);
+            
+                for(var key in params) {
+                    if(params.hasOwnProperty(key)) {
+                        var hiddenField = document.createElement("input");
+                        hiddenField.setAttribute("type", "hidden");
+                        hiddenField.setAttribute("name", key);
+                        hiddenField.setAttribute("value", params[key]);
+            
+                        form.appendChild(hiddenField);
+                    }
+                }
+            
+                document.body.appendChild(form);
+                form.submit();
+            }
+
+
+
+            //CandleStick Chart
+            var iva = document.getElementById("candleStickChartDV").innerHTML.split(';');
+            var ivaa = [];
+            iva.forEach(function(e){
+               ivaa.push(JSON.parse(e)); 
+            });
+
+            var ivo = {};
+            ivo.values = ivaa;
+
+            var candleStickChartData = [];
+            candleStickChartData[0] = ivo;
+            
+            var csdecimals = document.getElementById("candleStickChartDV").innerHTML.split(';')[0].split(',')[1].split(' ')[2].split('.')[1].length.toString();
+
+            nv.addGraph(function() {
+                var cschart = nv.models.candlestickBarChart()
+                    .x(function(d) { return d['date'] })
+                    .y(function(d) { return d['close'] })
+                    .duration(250)
+                    .margin({left: 90, right: 50, bottom: 50});
+        
+                // chart sub-models (ie. xAxis, yAxis, etc) when accessed directly, return themselves, not the parent chart, so need to chain separately
+                cschart.xAxis
+                        .axisLabel("")
+                        .tickFormat(function(d) {
+                            return d3.time.format("%d-%b-%y")(new Date(new Date('1970-01-01').getTime() + ((d + 1) * 86400000)));
+                        });
+                        
+                //cschart.xAxis.ticks(7);
+
+                cschart.yAxis
+                        .axisLabel('')
+                        .tickFormat(d3.format('.0' + csdecimals + 'f'));
+        
+        
+        
+                d3.select("#candleStickChart svg")
+                        .datum(candleStickChartData)
+                        .transition().duration(500)
+                        .call(cschart);
+        
+                nv.utils.windowResize(cschart.update);
+                return cschart;
+            });
+            
+
+
+
+
+
+            //Hourly Chart
+ 
+            var hchart;
+ 
+            var ihs = document.getElementById("hourlyChartDV").innerHTML;
+            var iha = ihs.split(':');
+            var ihaa = [];
+            var ihab = [];
+            var ihac = [];
+            iha.forEach(function(e){
+               ihab = e.replace('[', '').replace(']', '').replace(',', '').split(' ');
+               ihac.push(Number(ihab[0]));
+               ihac.push(Number(ihab[1]));
+               ihaa.push(ihac);
+               ihac = [];
+            });
+            
+            var iho = {};
+            iho.key = document.getElementById("exch_curr").innerHTML;
+            iho.values = ihaa;
+
+            var hourlyChartData = [];
+            hourlyChartData[0] = iho;
+            
+            //console.log(hourlyChartData[0].values[0][2]);
+            var hdecimals = hourlyChartData[0].values[0][1].toString().split('.')[1].length.toString();
+    
+    
+            nv.addGraph(function() {
+                hchart = nv.models.lineChart()
+                    .x(function(d) { return d[0] })
+                    .y(function(d) { return d[1] })
+                    .useInteractiveGuideline(true)
+                    .margin({left: 90, right: 50, bottom: 50});
+
+                hchart.yAxis
+                    .axisLabel('')
+                    .tickFormat(d3.format('.0' + hdecimals + 'f'));
+    
+                hchart.xAxis.rotateLabels(-0);
+                //hchart.xAxis.ticks(5);
+                
+                //hchart.forceY([7.848, 7.856]);
+    
+    
+                hchart.xAxis
+                    .tickFormat(function(d) {
+                        return d3.time.format("%d-%b %H:%M %p")(new Date(new Date('1970-01-01').getTime() + ((d + 1) * 3600000)));
+                    });
+                    
+
+    
+                d3.select('#hourlyChart svg')
+                    .datum(hourlyChartData)
+                    .transition().duration(0)
+                    .call(hchart);
+    
+                nv.utils.windowResize(hchart.update);
+    
+                return hchart;
+            });
+                        
+            
+
+            function updateHourlyChartLowEnd(val) {
+                hourlyChartData[0].values = ihaa.slice((document.getElementById("hourly-sliderLowEnd").value) * ihaa.length / 10, (document.getElementById("hourly-sliderHighEnd").value) * ihaa.length / 10);
+                hchart.update();
+            }
+
+            function updateHourlyChartHighEnd(val) {
+                hourlyChartData[0].values = ihaa.slice((document.getElementById("hourly-sliderLowEnd").value) * ihaa.length / 10, (document.getElementById("hourly-sliderHighEnd").value) * ihaa.length / 10);
+                hchart.update();
+            }
+ 
+ 
+
+
+
+
+
+
+
+
+            //Daily Chart
+ 
+            var dchart;
+ 
+            var ids = document.getElementById("dailyChartDV").innerHTML;
+            var ida = ids.split(':');
+            var idaa = [];
+            var idab = [];
+            var idac = [];
+            ida.forEach(function(e){
+               idab = e.replace('[', '').replace(']', '').replace(',', '').split(' ');
+               idac.push(Number(idab[0]));
+               idac.push(Number(idab[1]));
+               idaa.push(idac);
+               idac = [];
+            });
+            
+            var ido = {};
+            ido.key = document.getElementById("exch_curr").innerHTML;
+            ido.values = idaa;
+
+            var dailyChartData = [];
+            dailyChartData[0] = ido;
+            
+            //console.log(hourlyChartData[0].values[0][2]);
+            var ddecimals = dailyChartData[0].values[0][1].toString().split('.')[1].length.toString();
+    
+    
+            nv.addGraph(function() {
+                dchart = nv.models.lineChart()
+                    .x(function(d) { return d[0] })
+                    .y(function(d) { return d[1] })
+                    .useInteractiveGuideline(true)
+                    .margin({left: 90, right: 50, bottom: 50});
+
+                dchart.yAxis
+                    .axisLabel('')
+                    .tickFormat(d3.format('.0' + hdecimals + 'f'));
+    
+                dchart.xAxis.rotateLabels(-0);
+                //dchart.xAxis.ticks(5);
+                
+                //hchart.forceY([7.848, 7.856]);
+    
+    
+                dchart.xAxis
+                    .tickFormat(function(d) {
+                        return d3.time.format("%d-%b-%y")(new Date(new Date('1970-01-01').getTime() + ((d + 1) * 86400000)));
+                    });
+                    
+
+    
+                d3.select('#dailyChart svg')
+                    .datum(dailyChartData)
+                    .transition().duration(0)
+                    .call(dchart);
+    
+                nv.utils.windowResize(dchart.update);
+    
+                return dchart;
+            });
+                        
+            
+
+            function updateDailyChartLowEnd(val) {
+                dailyChartData[0].values = idaa.slice((document.getElementById("daily-sliderLowEnd").value) * idaa.length / 20, (document.getElementById("daily-sliderHighEnd").value) * idaa.length / 20);
+                dchart.update();
+            }
+
+            function updateDailyChartHighEnd(val) {
+                dailyChartData[0].values = idaa.slice((document.getElementById("daily-sliderLowEnd").value) * idaa.length / 20, (document.getElementById("daily-sliderHighEnd").value) * idaa.length / 20);
+                dchart.update();
+            }
+
+
+
+
+
+
+
+
+
+            //Past Performance Hourly Chart
+ 
+            var pphchart;
+            
+            var ipphs = document.getElementById("pastPerfHourlyChartDV").innerHTML;
+            
+            var ipphu = ipphs.split('^');
+            
+            var pastPerfHourlyChartDataHld = [];
+            
+
+            
+            ipphu.forEach(function(e) {
+                var pastPerfHourlyChartDataArr = [];
+                var ipphh = e.split('~');
+                ipphh.forEach(function(f) {
+                    var ippho = {};
+                    var ipphz = f.split('$');
+                    ippho.key = ipphz[0];
+                    var ippha =  ipphz[1].split(':');
+                    var ipphaa = [];
+                    var ipphab = [];
+                    var ipphac = [];
+                    ippha.forEach(function(e){
+                       ipphab = e.replace('[', '').replace(']', '').replace(',', '').split(' ');
+                       ipphac.push(Number(ipphab[0]));
+                       ipphac.push(Number(ipphab[1]));
+                       ipphaa.push(ipphac);
+                       ipphac = [];
+                    });
+                    ippho.values = ipphaa;
+                    pastPerfHourlyChartDataArr.push(ippho);
+            
+                });
+                pastPerfHourlyChartDataHld.push(pastPerfHourlyChartDataArr);
+            });
+
+
+            var pastPerfHourlyChartData = [];
+            pastPerfHourlyChartData = pastPerfHourlyChartDataHld[3];
+
+
+            //console.log(hourlyChartData[0].values[0][2]);
+            //var hdecimals = pastPerfHourlyChartData[0].values[1][1].toString().split('.')[1].length.toString();
+            var hdecimals = 10;
+    
+            nv.addGraph(function() {
+                pphchart = nv.models.stackedAreaChart()
+                    .x(function(d) { return d[0] })
+                    .y(function(d) { return d[1] })
+                    .useInteractiveGuideline(true)
+                    .margin({left: 90, right: 50, bottom: 50})
+                    .showLegend(false);
+
+                pphchart.style('expand');
+                
+                pphchart.yAxis
+                    .axisLabel('')
+                    .tickFormat(d3.format('.0' + hdecimals + 'f'));
+    
+                pphchart.xAxis.rotateLabels(-0);
+                //pphchart.xAxis.ticks(5);
+                
+                //pphchart.forceY([7.848, 7.856]);
+    
+
+                pphchart.xAxis
+                    .tickFormat(function(d) {
+                        return d3.time.format("%d-%b %H:%M %p")(new Date(new Date('1970-01-01').getTime() + ((d + 1) * 3600000)));
+                    });
+                    
+
+    
+                d3.select('#pastPerfHourlyChart svg')
+                    .datum(pastPerfHourlyChartData)
+                    .transition().duration(0)
+                    .call(pphchart);
+    
+                nv.utils.windowResize(pphchart.update);
+    
+                return pphchart;
+            });
+                        
+            
+            function tradingClicked(p) {
+                window.history.back();
+            }
+
+
+            
+            
+        </script>
+
+
+
+<% include partials/footerMenu.ejs %>
+
+
+
+    </body>
+</html>
+        
+
+
+		

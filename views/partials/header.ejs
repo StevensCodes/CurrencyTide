@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Page Title -->
+        <title>CurrencyTide</title>
+        <!-- Favicon -->
+        <link rel="shortcut icon" type="image/png" href="/CurrencyTideIconLogo.png">
+
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+
+        <!-- My own CSS -->
+        <link rel="stylesheet" type="text/css" href="/style.css">
+
+        <!-- A google font inclusion example -->
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet">
+        
+        <!-- Font Awesome -->    
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
+
+        
+        <!-- Load NVD3 -->
+        <link rel="stylesheet" href="https://cdn.rawgit.com/novus/nvd3/v1.8.1/build/nv.d3.css">
+        <link href="nv.d3.css" rel="stylesheet" type="text/css"> <!-- Candlestick Chart Only -->
+        
+        <script src="https://d3js.org/d3.v3.min.js"></script>
+        <script src="https://cdn.rawgit.com/novus/nvd3/v1.8.1/build/nv.d3.min.js"></script>
+        <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js" charset="utf-8"></script> <!-- Candlestick Chart Only --> <!-- Including these made the tooltip off on other charts on the same page -->
+        <!--<script src="nv.d3.js"></script> <!-- Candlestick Chart Only --> <!-- Including these made the tooltip off on other charts on the same page -->
+        
+
+
+    </head>
+    <body>
+        <nav class="navbar fixed-top navbar-expand-lg navbar-dark" style="background-color: #6b5fb9;">
+            <div class="container">
+                <a href="/"><img src="/CurrencyTideMenuLogo.png" class="top-left-logo-large"></a>
+                <a href="/"><img src="/CurrencyTideMenuLogo.png" width="250" class="top-left-logo-medium"></a>
+                <a href="/"><img src="/CurrencyTideMenuLogo.png" width="195" class="top-left-logo-small"></a>
+                
+                <div id="message" style="margin-left: 35px; background-color: #6b5fb9; color: orange;"><%= message %></div>
+                
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ml-auto">
+
+
+                        <% if(!currentUser){ %>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/rates" style="color: white;">Exchange Rates </a>
+                            </li>
+                        <% } else { %>
+                            <% if( page == "landing" || page == "account" || page == "graphs"){ %>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/trading" style="color: white;">Trading </a>
+                                </li>
+                            <% } %>                            
+                            <% if(page == "trading" || page == "monthlyStatement" || page == "quarterlyStatement" || page == "yearlyStatement"){ %>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="javascript:accountClicked();" style="color: white;">Account </a>
+                                </li>
+                            <% } %>                            
+                        <% } %>
+                        
+
+                        <li class="nav-item dropdown" style="color: #dddcef;">
+                            <a class="nav-link dropdown-toggle" href="#" style="margin-right: 50px; color: white;" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">About</a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="https://www.linkedin.com/in/istvan-rimaszombati-b6251047" target="_blank"><img src="/LinkedInLogo.png" height="20"> Linked In Profile</a>
+                                <a class="dropdown-item" href="https://github.com/StevensCodes/CurrencyTide" target="_blank"><img src="GithubLogo.png" height="20">  Git Hub Page</a>
+                            </div>
+                        </li>
+
+
+                        <% if(!currentUser){ %>
+                            <li class="nav-item">
+                                <button class="nav-link" id="login" data-target="#loginModal" data-toggle="modal" style="background-color: #6b5fb9; color: white;"><i class="fas fa-user-circle"></i> Login</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" id="sign-up" data-target="#registerModal" data-toggle="modal"  style="background-color: #6b5fb9; color: white;">Sign Up</button>
+                            </li>
+                        <% } else { %>
+                            <li class="nav-item">
+                                <a class="nav-link" id="currentUser" href="/routes" style="background-color: #6b5fb9; color: white;"><i class="fas fa-user-circle"></i> <%= currentUser.charAt(0).toUpperCase() + currentUser.slice(1) %></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="logout" href="/logout" style="background-color: #6b5fb9; color: white;">Logout</a>
+                            </li>
+                        <% } %>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="modal fade" tabindex="-1" id="loginModal" data-keyboard="false" data-backdrop="static">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="loginModalLongTitle">Login</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form action="/login" method="POST" >
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="inputUserName">Username</label>
+                                <input class="form-control" placeholder="Username" type="text" id="loginInputUserName" name = "username" required/>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputPassword">Password</label>
+                                <input class="form-control" placeholder="Password" type="password" id="loginInputPassword" name="password" required />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Log In</button>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="modal fade" tabindex="-1" id="registerModal" data-keyboard="false" data-backdrop="static">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="registerModalLongTitle">Sign Up</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form action="/register" method="POST">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="inputUserName">Username</label>
+                                <input class="form-control" placeholder="Username" type="text" id="registerInputUserName" name = "username" required/>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputBaseCurrency">Select your home currency</label>
+                                <select class="custom-select" id="registerInputBaseCurrency" name = "baseCurrency">
+                                    <option selected>Choose...</option>
+                                    <option value="AUD">Australian Dollar - AUD</option>
+                                    <option value="BRL">Brazialian Real - BRL</option>
+                                    <option value="CAD">Canadian Dollar - CAD</option>
+                                    <option value="CHF">Swiss Franc - CHF</option>
+                                    <option value="CNY">Chinese Yuan - CNY</option>
+                                    <option value="EUR">Euro - EUR</option>
+                                    <option value="GBP">British Pound Sterling - GBP</option>
+                                    <option value="HKD">Hong Kong Dollar - HKD</option>
+                                    <option value="INR">Indian Rupee - INR</option>
+                                    <option value="JPY">Japanese Yen - JPY</option>
+                                    <option value="KRW">South Korean Won - KRW</option>
+                                    <option value="MXN">Mexican Peso - MXN</option>
+                                    <option value="NOK">Norwegian Krone - NOK</option>
+                                    <option value="NZD">New Zealand Dollar - NZD</option>
+                                    <option value="RUB">Russian Ruble - RUB</option>
+                                    <option value="SEK">Swedish Krona - SEK</option>
+                                    <option value="SGD">Singapore Dollar - SGD</option>
+                                    <option value="TRY">Turkish Lira - TRY</option>
+                                    <option value="USD">US Dollar - USD</option>
+                                    <option value="ZAR">South African Rand - ZAR</option>
+                                  </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputPassword">Password</label>
+                                <input class="form-control" placeholder="Password" type="password" id="registerInputPassword" name="password" required />
+                            </div>
+                            <div class="form-group">
+                                <input class="form-control" placeholder="Confirm Password" type="password" id="registerInputConfirmPassword" name="confirmPassword" required />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Sign Up</button>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+
+    

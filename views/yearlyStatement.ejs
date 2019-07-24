@@ -1,0 +1,439 @@
+<% include partials/header.ejs %>
+
+        <div class="world-background">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 smallPadding">
+                        <div class="rate-box-trade">
+                            <div class="container">
+                                <h1 class="world-msg col-lg-12">Yearly Statement</h1>
+
+                                
+                                <a href="javascript:history.back()" style="position: absolute; top: 35px; color: darkslateblue; font-size: 25px;"><i class="fas fa-angle-double-left back-button"></i></a>
+                                
+                                <div style = "margin-bottom: 40px;"></div>
+
+                                <div class="row">
+                                    <div class="col-sm-6 col-lg-8 smallPadding">
+                                        <table style="width:100%;">
+                                            <tr>
+                                                <td class="statement-header-2" style="width: 100px;">Username</dh>
+                                                <td class="statement-detail"><%= currentUser.charAt(0).toUpperCase() + currentUser.slice(1) %></dh>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2" style="width: 100px;">Currency</dh>
+                                                <td class="statement-detail"><%= currency_code %></dh>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2" style="width: 100px;">Date</dh>
+                                                <td class="statement-detail"><%= data[4] %></dh>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    
+                                    <div style = "margin-bottom: 60px;"></div>
+
+                                    <div class="col-sm-6 col-lg-4 smallPadding">
+                                        <table style="width:100%;">
+                                            <tr>
+                                                <th class="statement-header-1" style="padding-bottom: 10px;">Summary</th>
+                                                <th></th>
+                                            </tr>
+                                            <tr>
+                                                <th></th>
+                                                <th></th>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2">Period Start</td>
+                                                <td class="statement-detail" style="text-align: right;"><%= data[0][0].date %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2">Period End</td>
+                                                <td class="statement-detail" style="text-align: right;"><%= data[0][data[0].length - 1].date %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2">Number of Days</td>
+                                                <td class="statement-detail" style="text-align: right;"><%= data[0].length %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2">Opening Balance</td>
+                                                <td class="statement-detail" style="text-align: right;"><%= data[0][0].total.toFixed(2) %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2">Gift Amount</td>
+                                                <td class="statement-detail" style="text-align: right;"><%= data[1].reduce((accumulator, currentValue) => { return accumulator + (currentValue.type == 'Gift' ? parseFloat((currentValue.units_bought || '+0 0').toString().split('+')[1].split(' ')[0]) : 0 ); }, 0).toFixed(2) %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2">Number of Trades</td>
+                                                <td class="statement-detail" style="text-align: right;"><%= data[1].reduce((accumulator, currentValue) => { return accumulator + (currentValue.type == 'Trade' ? 1 : 0 ); }, 0) %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2">Closing Balance</td>
+                                                <td class="statement-detail" style="text-align: right;"><%= data[0][data[0].length - 1].total.toFixed(2) %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2">Average Daily Balance</td>
+                                                <td class="statement-detail" style="text-align: right;"><%= (data[0].reduce((accumulator, currentValue) => { return accumulator + currentValue.total;}, 0) / data[0].length).toFixed(2) %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2">Net Profit</td>
+                                                <td class="statement-detail" style="text-align: right;"><%= (data[0][data[0].length - 1].total - data[0][0].total).toFixed(2) %></td>
+                                            </tr>
+                                            <tr>
+                                                <th></th>
+                                                <th></th>
+                                            </tr>
+                                            <tr>
+                                                <th></th>
+                                                <th></th>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div style = "margin-bottom: 30px;"></div>
+
+                                <div class="row">
+                                    <div class="col-xl-12 smallPadding" style = "margin-top: 40px;">
+
+                                        <h5 class="chart-title" style=" text-align: left; font-size: 20px;">Monthly Balances</h5>
+                                        <div style = "margin-bottom: 10px;"></div>
+                                        <table style="width:100%;">
+                                            <tr>
+                                                <th class="recent-trades" style="text-align: right; color: darkslateblue; width: 6%;"></th> 
+                                                <th class="recent-trades" style="text-align: left; color: darkslateblue; width: 8%;">Month</th> 
+                                                <th class="recent-trades" style="text-align: right; color: darkslateblue; width: 8%;">Opening</th> 
+                                                <th class="recent-trades recent-trades-hide" style="text-align: right; color: darkslateblue; width: 13%;">High</th>
+                                                <th class="recent-trades recent-trades-hide" style="text-align: right; color: darkslateblue; width: 13%;">Low</th>
+                                                <th class="recent-trades recent-trades-hide" style="text-align: right; color: darkslateblue; width: 13%;">Average</th>
+                                                <th class="recent-trades" style="text-align: right; color: darkslateblue; width: 13%;">Closing</th>
+                                                <th class="recent-trades" style="text-align: right; color: darkslateblue; width: 13%;">Difference</th>
+                                                <th class="recent-trades" style="color: darkslateblue; text-align: right; width: 13%;">Percent</th> 
+                                            </tr>
+                                            <tr>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades recent-trades-hide"></th>
+                                                <th class="recent-trades recent-trades-hide"></th>
+                                                <th class="recent-trades recent-trades-hide"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                            </tr>
+
+                                             <% for(var i = 0; i < data[2].length; i++) { %>
+
+                                                <tr style="border-bottom: 1px solid lightgray;">
+                                                    <td class="recent-trades" style="font-weight: 600; padding-left: 5px; tex-align: right;"><%= i + 1 %>.</td>
+                                                    <td class="recent-trades" style="color: dimgray; font-weight: 600; text-align: left;"><%= data[2][i].month %></td>
+                                                    <td class="recent-trades" style="font-weight: 600; text-align: right;"><%= data[2][i].opening_balance.toFixed(2) %></td>
+                                                    <td class="recent-trades recent-trades-hide" style="font-weight: 600; text-align: right;"><%= data[2][i].high_balance.toFixed(2) %></td>
+                                                    <td class="recent-trades recent-trades-hide" style="font-weight: 600; text-align: right;"><%= data[2][i].low_balance.toFixed(2) %></td>
+                                                    <td class="recent-trades recent-trades-hide" style="font-weight: 600; text-align: right;"><%= data[2][i].average_balance.toFixed(2) %></td>
+                                                    <td class="recent-trades" style="font-weight: 600; text-align: right;"><%= data[2][i].closing_balance.toFixed(2) %></td>
+                                                    <td class="recent-trades" style="font-weight: 600; text-align: right; <% if (data[2][i].difference > 0) { %> color: green; <% } else if (data[2][i].difference < 0) { %> color: red; <% } %>"><%= data[2][i].difference.toFixed(2) %></td>
+                                                    <td class="recent-trades" style="font-weight: 600; text-align: right; <% if (data[2][i].percent_change > 0) { %> color: green; <% } else if (data[2][i].percent_change < 0) { %> color: red; <% } %> "><%= data[2][i].percent_change.toFixed(2) %>%</td>
+                                                </tr>
+                                            
+                                              <% } %>
+                                            <tr>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades recent-trades-hide"></th>
+                                                <th class="recent-trades recent-trades-hide"></th>
+                                                <th class="recent-trades recent-trades-hide"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                            </tr>
+
+                                        </table>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-lg-6 smallPadding" style = "margin-top: 40px;">
+                                        <h5 class="chart-title" style=" text-align: left; font-size: 20px; margin-bottom: 30px;">Monthly Closing Balance</h5>
+                                        <div id="monthlyBalanceChart" style = "height: 220px; width: 100%;">
+                                            <svg></svg>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-6 smallPadding" style = "margin-top: 40px;">
+                                        <h5 class="chart-title" style=" text-align: left; font-size: 20px; margin-bottom: 30px;">Monthly Difference</h5>
+                                        <div id="monthlyDifferenceChart" style = "height: 220px; width: 100%;">
+                                            <svg></svg>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="row">
+                                    <div class="col-xl-6 smallPadding" style = "margin-top: 40px;">
+
+                                        <h5 class="chart-title" style=" text-align: left; font-size: 20px;">Trades per Month</h5>
+                                        <div style = "margin-bottom: 10px;"></div>
+                                        <table style="width:100%;">
+                                            <tr>
+                                                <th class="recent-trades" style="text-align: right; color: darkslateblue; width: 6%;"></th> 
+                                                <th class="recent-trades" style="text-align: left; color: darkslateblue;">Month</th> 
+                                                <th class="recent-trades" style="text-align: right; color: darkslateblue;">Number of Trades</th> 
+                                                <th class="recent-trades" style="text-align: right; color: darkslateblue">Volume of Trades</th>
+                                                <th class="recent-trades" style="text-align: center; color: darkslateblue;">Most Sold Currency</th>
+                                                <th class="recent-trades" style="text-align: center; color: darkslateblue;">Most Bought Currency</th>
+                                            </tr>
+                                            <tr>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                            </tr>
+
+                                             <% for(var i = 0; i < data[3].length; i++) { %>
+
+                                                <tr style="border-bottom: 1px solid lightgray;">
+                                                    <td class="recent-trades" style="font-weight: 600; padding-left: 5px; tex-align: right;"><%= i + 1 %>.</td>
+                                                    <td class="recent-trades" style="color: dimgray; font-weight: 600; text-align: left;"><%= data[3][i].month %></td>
+                                                    <td class="recent-trades" style="font-weight: 600; text-align: right;"><%= data[3][i].number_of_trades %></td>
+                                                    <td class="recent-trades" style="font-weight: 600; text-align: right;"><%= data[3][i].volume_of_trades.toFixed(2) %></td>
+                                                    <td class="recent-trades" style="font-weight: 600; text-align: center;"><%= data[3][i].most_sold_currency %></td>
+                                                    <td class="recent-trades" style="font-weight: 600; text-align: center;"><%= data[3][i].most_bought_currency %></td>
+                                                </tr>
+                                            
+                                              <% } %>
+                                            <tr>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                            </tr>
+
+                                        </table>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-lg-6 smallPadding" style = "margin-top: 40px;">
+                                        <h5 class="chart-title" style=" text-align: left; font-size: 20px; margin-bottom: 30px;">Number of Trades per Month</h5>
+                                        <div id="monthlyTradesChart" style = "height: 220px; width: 100%;">
+                                            <svg></svg>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-6 smallPadding" style = "margin-top: 40px;">
+                                        <h5 class="chart-title" style=" text-align: left; font-size: 20px; margin-bottom: 30px;">Volume of Trades per Month</h5>
+                                        <div id="monthlyVolumeChart" style = "height: 220px; width: 100%;">
+                                            <svg></svg>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                                <div style="display: none;" id="data2closing_balance"><% for(var i = 0; i < data[2].length; i++) { %><%= data[2][i].month %>,<%= data[2][i].closing_balance %>:<% } %></div>
+                                <div style="display: none;" id="data2difference"><% for(var i = 0; i < data[2].length; i++) { %><%= data[2][i].month %>,<%= data[2][i].difference %>:<% } %></div>
+                                
+                                <div style="display: none;" id="data3numberOfTrades"><% for(var i = 0; i < data[2].length; i++) { %><%= data[3][i].month %>,<%= data[3][i].number_of_trades %>:<% } %></div>
+                                <div style="display: none;" id="data3volumeOfTrades"><% for(var i = 0; i < data[2].length; i++) { %><%= data[3][i].month %>,<%= data[3][i].volume_of_trades %>:<% } %></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>    
+            </div>
+        </div>
+
+
+<style>
+    
+    @media only screen and (min-width: 0px) and (max-width: 567px)  {
+        .nv-x text{
+            font-size: 10px;
+        }
+    
+        .nv-discretebar text{
+            font-size: 10px;
+        }
+    }
+
+</style>
+
+        <script>
+        
+            //Monthly Balance Chart
+
+            var mbdata = [];
+            var vmbdata = [];
+            var mbarr = document.getElementById("data2closing_balance").innerHTML.substring(0, document.getElementById("data2closing_balance").innerHTML.length - 1).split(':');
+            mbarr.forEach(function(p) {
+                vmbdata.push({"label" : p.split(',')[0], "value" : Number(p.split(',')[1])});
+            });
+            
+            mbdata.push({key: "", values: vmbdata});
+
+            nv.addGraph(function() {
+                var mbchart = nv.models.discreteBarChart()
+                    .x(function(d) { return d.label })
+                    .y(function(d) { return d.value })
+                    .showValues(false)
+                    .color(['Darkslateblue']);
+                    
+
+                mbchart.tooltip.contentGenerator(function(data) {
+                    return data.data.value.toFixed(2);
+                });
+
+                
+
+                d3.select("#monthlyBalanceChart svg")
+                    .datum(mbdata)
+                    .transition().duration(500)
+                    .call(mbchart);
+
+                
+                nv.utils.windowResize(mbchart.update);
+
+                return mbchart;
+            });
+
+
+
+            //Monthly Difference Chart
+
+            var mddata = [];
+            var vmddata = [];
+            var mdarr = document.getElementById("data2difference").innerHTML.substring(0, document.getElementById("data2difference").innerHTML.length - 1).split(':');
+            mdarr.forEach(function(p) {
+                vmddata.push({"label" : p.split(',')[0], "value" : Number(p.split(',')[1])});
+            });
+            
+            mddata.push({key: "", values: vmddata});
+
+            nv.addGraph(function() {
+                var mdchart = nv.models.discreteBarChart()
+                    .x(function(d) { return d.label })
+                    .y(function(d) { return d.value })
+                    .showValues(false)
+                    .color(['FireBrick']);
+                    
+
+                mdchart.tooltip.contentGenerator(function(data) {
+                    return data.data.value.toFixed(2);
+                });
+
+                
+
+                d3.select("#monthlyDifferenceChart svg")
+                    .datum(mddata)
+                    .transition().duration(500)
+                    .call(mdchart);
+
+                
+                nv.utils.windowResize(mdchart.update);
+
+                return mdchart;
+            });
+
+
+
+
+            //Number of Trades
+
+            var ntdata = [];
+            var vntdata = [];
+            var ntarr = document.getElementById("data3numberOfTrades").innerHTML.substring(0, document.getElementById("data3numberOfTrades").innerHTML.length - 1).split(':');
+            ntarr.forEach(function(p) {
+                vntdata.push({"label" : p.split(',')[0], "value" : Number(p.split(',')[1])});
+            });
+            
+            ntdata.push({key: "", values: vntdata});
+
+            nv.addGraph(function() {
+                var ntchart = nv.models.discreteBarChart()
+                    .x(function(d) { return d.label })
+                    .y(function(d) { return d.value })
+                    .showValues(false)
+                    .color(['DarkOliveGreen']);
+                    
+
+                ntchart.tooltip.contentGenerator(function(data) {
+                    return data.data.value;
+                });
+
+                
+
+                d3.select("#monthlyTradesChart svg")
+                    .datum(ntdata)
+                    .transition().duration(500)
+                    .call(ntchart);
+
+                
+                nv.utils.windowResize(ntchart.update);
+
+                return ntchart;
+            });
+
+
+
+
+            //Volume of Trades
+
+            var vtdata = [];
+            var vvtdata = [];
+            var vtarr = document.getElementById("data3volumeOfTrades").innerHTML.substring(0, document.getElementById("data3volumeOfTrades").innerHTML.length - 1).split(':');
+            vtarr.forEach(function(p) {
+                vvtdata.push({"label" : p.split(',')[0], "value" : Number(p.split(',')[1])});
+            });
+            
+            vtdata.push({key: "", values: vvtdata});
+
+            nv.addGraph(function() {
+                var vtchart = nv.models.discreteBarChart()
+                    .x(function(d) { return d.label })
+                    .y(function(d) { return d.value })
+                    .showValues(false)
+                    .color(['GoldenRod']);
+                    
+
+                vtchart.tooltip.contentGenerator(function(data) {
+                    return data.data.value.toFixed(2);
+                });
+
+                
+
+                d3.select("#monthlyVolumeChart svg")
+                    .datum(vtdata)
+                    .transition().duration(500)
+                    .call(vtchart);
+
+                
+                nv.utils.windowResize(vtchart.update);
+
+                return vtchart;
+            });
+
+
+
+            function accountClicked(p) {
+                window.history.back();     
+            }
+
+        </script>
+
+
+
+<% include partials/footerMenu.ejs %>
+
+
+
+    </body>
+</html>
+        
+
+
+		

@@ -1,0 +1,382 @@
+<% include partials/header.ejs %>
+
+        <div class="world-background">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 smallPadding">
+                        <div class="rate-box-trade">
+                            <div class="container">
+                                <h1 class="world-msg col-lg-12">Account Details</h1>
+
+                                
+                                <a href="javascript:history.back()" style="position: absolute; top: 35px; color: darkslateblue; font-size: 25px;"><i class="fas fa-angle-double-left back-button"></i></a>
+                                
+                                
+                                <div style="padding-bottom:1px;">
+                                    <h3><img src="/Flags/<%= currency_code %>.png" alt="" height=28 style="box-shadow: 0px 1px 3px 1px rgba(0,0,0,0.15);"></img></h3>
+                                    <div style="font-weight:bold; color:darkslateblue; font-size: 18px;">Current Balance: <%= acctTotal%> <%= currency_code%></div>
+                                </div>
+
+                                <div style = "margin-bottom: 40px;"></div>
+
+                                <div class="row">
+                                    <div class="col-xl-6 smallPadding">
+                                        <h3 class="chart-title">Daily Balance</h3>
+    
+    
+                                        <div id="dailyChart" style = "height: 200px; width: 100%;">
+                                            <svg></svg>
+                                        </div>
+                                    
+                                    </div>
+                                    <div class="col-xl-6 smallPadding">
+                                        <h3 class="chart-title">Hourly Balance</h3>
+    
+    
+                                        <div id="hourlyChart" style = "height: 200px; width: 100%;">
+                                            <svg></svg>
+                                        </div>
+                                    
+                                    </div>
+                                </div>
+
+                                
+
+                                <div style = "margin-bottom: 20px;"></div>
+
+                                <hr>
+                                <hr>
+                                
+
+
+                                <div class="row">
+                                    <div id="recentTransactions" class="col-xl-6 smallPadding" style = "margin-top: 40px;">
+                                        <h5 class="chart-title">Recent Transactions</h5>
+                                        <table style="width:100%;">
+                                            <tr>
+                                                <th class="recent-trades" style="text-align: left; color: darkslateblue;">Date</th> 
+                                                <th class="recent-trades recent-trades-hide" style="text-align: left; color: darkslateblue;">Type</th> 
+                                                <th class="recent-trades" style="text-align: left; color: darkslateblue;">Units Sold</th> 
+                                                <th class="recent-trades" style="text-align: left; color: darkslateblue;">Units Bought</th>
+                                                <th class="recent-trades recent-trades-hide" style="text-align: left; color: darkslateblue; text-align: right;">Daily Balance</th> 
+                                            </tr>
+
+                                             <% for(var i = 0; i < data[2].length; i++) { %>
+
+                                                <tr style="border-bottom: 1px solid lightgray;">
+                                                    <td class="recent-trades" style="font-weight: 600; padding-left: 5px;"><%= data[2][i].date %></td>
+                                                    <td class="recent-trades recent-trades-hide" style="color: dimgray; font-weight: 600;"><%= data[2][i].type %></td>
+                                                    <td class="recent-trades" style="color: red; font-weight: 600;"><%= data[2][i].units_sold %></td>
+                                                    <td class="recent-trades" style="color: green; font-weight: 600;"><%= data[2][i].units_bought %></td>
+                                                    <td class="recent-trades recent-trades-hide" style="font-weight: 600; text-align: right;"><% if (data[2][i].daily_balance) { %> <%= data[2][i].daily_balance.toFixed(2) %><% } else { %> <%= acctTotal %><% } %></td>
+                                                </tr>
+                                            
+                                            
+                                              <% } %>
+
+                                        </table>
+                                    </div>
+
+
+
+
+
+
+
+                                    <div class="col-xl-6 smallPadding" style = "margin-top: 40px;">
+                                        <h5 class="chart-title">Statements</h5>
+                                        <table style="width:100%; border: 1px solid lightgray;">
+                                            <tr>
+                                                <th class="recent-trades" style="text-align: left; color: darkslateblue;">Date</th> 
+                                                <th class="recent-trades" style="text-align: left; color: darkslateblue;">Type</th> 
+                                                <th class="recent-trades" style="text-align: left; color: darkslateblue; text-align: center;">Open</th> 
+                                                <th class="recent-trades" style="font-size: 0; text-align: left; color: darkslateblue; text-align: center;">Save</th>
+                                            </tr>
+
+                                             <% for(var i = 0; i < data[3].length; i++) { %>
+
+                                                <tr <% if (data[3][i].year) { %> class="monthly_statement_<%= data[3][i].year %> hidden" <% } %>>
+                                                    <td class="recent-trades" style="font-weight: 600; padding-left: 5px; <% if (data[3][i].year_month_statement.length == 4) { %> font-weight: 700; <% } %>"><%= data[3][i].year_month_statement %><% if (data[3][i].year_month_statement.length == 4) { %> <i class="far fa-plus-square" id="monthly_expand_<%= data[3][i].year_month_statement %>"> <% } %></td>
+                                                    <td class="recent-trades" style="font-weight: 600;"><% if (data[3][i].year_month_statement.length != 4) { %> Statement <% } %></td>
+                                                    <td class="recent-trades" id="monthlyStatement_<%= data[3][i].date_ord %>-01" onclick="monthlyStatementClicked(this)" style="font-weight: 600; text-align: center;"><% if (data[3][i].year_month_statement.length != 4) { %> <i class="far fa-file-alt" style="color: dimgray; cursor: pointer;"></i> <% } %></td>
+                                                    <td class="recent-trades" style="font-size: 0; font-weight: 600; text-align: center;"><% if (data[3][i].year_month_statement.length != 4) { %> <i class="fas fa-download" style="color: dimgray; cursor: pointer;"></i> <% } %></td>
+                                                </tr>
+                                            
+                                              <% } %>
+
+                                        </table>
+
+
+                                        <h5 class="chart-title" style="padding-top: 25px;">Quarterly Summaries</h5>
+                                        <table style="width:100%; border: 1px solid lightgray;">
+                                            <tr>
+                                                <th class="recent-trades" style="text-align: left; color: darkslateblue;">Date</th> 
+                                                <th class="recent-trades" style="text-align: left; color: darkslateblue;">Type</th> 
+                                                <th class="recent-trades" style="text-align: left; color: darkslateblue; text-align: center;">Open</th> 
+                                                <th class="recent-trades" style="font-size: 0; text-align: left; color: darkslateblue; text-align: center;">Save</th>
+                                            </tr>
+
+                                             <% for(var i = 0; i < data[4].length; i++) { %>
+
+                                                <tr <% if (data[4][i].year) { %> class="quarterly_statement_<%= data[4][i].year %> hidden" <% } %>>
+                                                    <td class="recent-trades" style="font-weight: 600; padding-left: 5px; <% if (data[4][i].year_quarter_statement.length == 4) { %> font-weight: 700; <% } %>"><%= data[4][i].year_quarter_statement %><% if (data[4][i].year_quarter_statement.length == 4) { %> <i class="far fa-plus-square" id= "quarterly_expand_<%= data[4][i].year_quarter_statement %>"> <% } %></td>
+                                                    <td class="recent-trades" style="font-weight: 600;"><% if (data[4][i].year_quarter_statement.length != 4) { %> Quarterly Summary <% } %></td>
+                                                    <td class="recent-trades" id="quarterlyStatement_<%= data[4][i].date_link %>" onclick="quarterlyStatementClicked(this)" style="font-weight: 600; text-align: center;"><% if (data[4][i].year_quarter_statement.length != 4) { %> <i class="far fa-file-alt" style="color: dimgray; cursor: pointer;"></i> <% } %></td>
+                                                    <td class="recent-trades" style="font-size: 0; font-weight: 600; text-align: center;"><% if (data[4][i].year_quarter_statement.length != 4) { %> <i class="fas fa-download" style="color: dimgray; cursor: pointer;"></i> <% } %></td>
+                                                </tr>
+                                            
+                                              <% } %>
+
+                                        </table>
+
+
+                                        <h5 class="chart-title" style="padding-top: 25px;">Year-end Summaries</h5>
+                                        <table style="width:100%; border: 1px solid lightgray;">
+                                            <tr>
+                                                <th class="recent-trades" style="text-align: left; color: darkslateblue;">Date</th> 
+                                                <th class="recent-trades" style="text-align: left; color: darkslateblue;">Type</th> 
+                                                <th class="recent-trades" style="text-align: left; color: darkslateblue; text-align: center;">Open</th> 
+                                                <th class="recent-trades" style="font-size: 0; text-align: left; color: darkslateblue; text-align: center;">Save</th>
+                                            </tr>
+
+                                             <% for(var i = 0; i < data[5].length; i++) { %>
+
+                                                <tr>
+                                                    <td class="recent-trades" style="font-weight: 600; padding-left: 5px;"><%= data[5][i].year_end_statement %></td>
+                                                    <td class="recent-trades" style="font-weight: 600;">Annual Summary</td>
+                                                    <td class="recent-trades" id="yearlyStatement_<%= data[5][i].year_end_statement %>-01-01" onclick="yearlyStatementClicked(this)" style="font-weight: 600; text-align: center;"><i class="far fa-file-alt" style="color: dimgray; cursor: pointer;"></i></td>
+                                                    <td class="recent-trades" style="font-size: 0; font-weight: 600; text-align: center;"><i class="fas fa-download" style="color: dimgray; cursor: pointer;"></i></td>
+                                                </tr>
+                                            
+                                              <% } %>
+
+                                        </table>
+
+                                    </div>
+
+                                </div>
+
+
+
+
+                                <div style="display: none;" id="base_curr"><%= currency_code%></div>
+                                <div style="display: none;" id="curUser"><%= currentUser%></div>
+                                <div style="display: none;" id="hourlyChartDV"><%= data[0] %></div>
+                                <div style="display: none;" id="dailyChartDV"><%= data[1] %></div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>    
+            </div>
+        </div>
+
+
+
+        <script>
+
+            function post(path, params, method) {
+                method = method || "post"; // Set method to post by default if not specified.
+            
+                // The rest of this code assumes you are not using a library.
+                // It can be made less wordy if you use one.
+                var form = document.createElement("form");
+                form.setAttribute("method", method);
+                form.setAttribute("action", path);
+            
+                for(var key in params) {
+                    if(params.hasOwnProperty(key)) {
+                        var hiddenField = document.createElement("input");
+                        hiddenField.setAttribute("type", "hidden");
+                        hiddenField.setAttribute("name", key);
+                        hiddenField.setAttribute("value", params[key]);
+            
+                        form.appendChild(hiddenField);
+                    }
+                }
+            
+                document.body.appendChild(form);
+                form.submit();
+            }
+
+
+
+
+            //Hourly Chart
+ 
+            var hchart;
+ 
+            var ihs = document.getElementById("hourlyChartDV").innerHTML;
+            var iha = ihs.split(':');
+            var ihaa = [];
+            var ihab = [];
+            var ihac = [];
+            iha.forEach(function(e){
+               ihab = e.replace('[', '').replace(']', '').replace(',', '').split(' ');
+               ihac.push(Number(ihab[0]));
+               ihac.push(Number(ihab[1]));
+               ihaa.push(ihac);
+               ihac = [];
+            });
+            
+            var iho = {};
+            iho.key = document.getElementById("base_curr").innerHTML;
+            iho.values = ihaa;
+
+            var hourlyChartData = [];
+            hourlyChartData[0] = iho;
+            
+            //console.log(hourlyChartData[0].values[0][2]);
+            //var hdecimals = hourlyChartData[0].values[0][1].toString().split('.')[1].length.toString();
+    
+    
+            nv.addGraph(function() {
+                hchart = nv.models.lineChart()
+                    .x(function(d) { return d[0] })
+                    .y(function(d) { return d[1] })
+                    .useInteractiveGuideline(true)
+                    .margin({left: 90, right: 50, bottom: 50});
+
+                hchart.yAxis
+                    .axisLabel('')
+                    //.tickFormat(d3.format('.0' + hdecimals + 'f'));
+                    .tickFormat(d3.format('.0' + 2 + 'f'));
+    
+                hchart.xAxis.rotateLabels(-0);
+                //hchart.xAxis.ticks(5);
+                
+                //hchart.forceY([7.848, 7.856]);
+    
+    
+                hchart.xAxis
+                    .tickFormat(function(d) {
+                        return d3.time.format("%d-%b %H:%M %p")(new Date(new Date('1970-01-01').getTime() + ((d + 1) * 3600000)));
+                    });
+                    
+
+    
+                d3.select('#hourlyChart svg')
+                    .datum(hourlyChartData)
+                    .transition().duration(0)
+                    .call(hchart);
+    
+                nv.utils.windowResize(hchart.update);
+    
+                return hchart;
+            });
+                        
+            
+
+
+
+
+            //Daily Chart
+ 
+            var dchart;
+ 
+            var ids = document.getElementById("dailyChartDV").innerHTML;
+            var ida = ids.split(':');
+            var idaa = [];
+            var idab = [];
+            var idac = [];
+            ida.forEach(function(e){
+               idab = e.replace('[', '').replace(']', '').replace(',', '').split(' ');
+               idac.push(Number(idab[0]));
+               idac.push(Number(idab[1]));
+               idaa.push(idac);
+               idac = [];
+            });
+            
+            var ido = {};
+            ido.key = document.getElementById("base_curr").innerHTML;
+            ido.values = idaa;
+
+            var dailyChartData = [];
+            dailyChartData[0] = ido;
+            
+            //console.log(hourlyChartData[0].values[0][2]);
+            //var ddecimals = dailyChartData[0].values[0][1].toString().split('.')[1].length.toString();
+    
+    
+            nv.addGraph(function() {
+                dchart = nv.models.lineChart()
+                    .x(function(d) { return d[0] })
+                    .y(function(d) { return d[1] })
+                    .useInteractiveGuideline(true)
+                    .margin({left: 90, right: 50, bottom: 50});
+
+                dchart.yAxis
+                    .axisLabel('')
+                    //.tickFormat(d3.format('.0' + hdecimals + 'f'));
+                    .tickFormat(d3.format('.0' + 2 + 'f'));
+    
+                dchart.xAxis.rotateLabels(-0);
+                //dchart.xAxis.ticks(5);
+                
+                //hchart.forceY([7.848, 7.856]);
+    
+    
+                dchart.xAxis
+                    .tickFormat(function(d) {
+                        return d3.time.format("%d-%b-%y")(new Date(new Date('1970-01-01').getTime() + ((d + 1) * 86400000)));
+                    });
+                    
+
+    
+                d3.select('#dailyChart svg')
+                    .datum(dailyChartData)
+                    .transition().duration(0)
+                    .call(dchart);
+    
+                nv.utils.windowResize(dchart.update);
+    
+                return dchart;
+            });
+                        
+
+            document.addEventListener('click',function(e){
+
+                if(e.target && e.target.id.startsWith('monthly_expand_')){
+                    var el = document.getElementsByClassName('monthly_statement_' + e.target.id.substring(15, 21));
+                    for (var i=0; i < el.length; i++) {
+                        el[i].classList.toggle("hidden");
+                    }
+                }
+                if(e.target && e.target.id.startsWith('quarterly_expand_')){
+                    var el = document.getElementsByClassName('quarterly_statement_' + e.target.id.substring(17, 23));
+                    for (var i=0; i < el.length; i++) {
+                        el[i].classList.toggle("hidden");
+                    }
+                }
+
+            });
+
+
+            function monthlyStatementClicked(p) {
+                post('/monthlyStatement', {stmtDate: p.id.split('_')[1]});
+            }
+    
+            function quarterlyStatementClicked(p) {
+                post('/quarterlyStatement', {stmtDate: p.id.split('_')[1]});
+            }
+    
+            function yearlyStatementClicked(p) {
+                post('/yearlyStatement', {stmtDate: p.id.split('_')[1]});
+            }
+
+
+
+        </script>
+
+
+
+<% include partials/footerMenu.ejs %>
+
+
+
+    </body>
+</html>
+        
+
+
+		

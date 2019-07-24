@@ -1,0 +1,191 @@
+<% include partials/header.ejs %>
+
+        <div class="world-background">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 smallPadding">
+                        <div class="rate-box-trade">
+                            <div class="container">
+                                <h1 class="world-msg col-lg-12">Monthly Statement</h1>
+
+                                
+                                <a href="javascript:history.back()" style="position: absolute; top: 35px; color: darkslateblue; font-size: 25px;"><i class="fas fa-angle-double-left back-button"></i></a>
+                                
+                                <div style = "margin-bottom: 40px;"></div>
+
+                                <div class="row">
+                                    <div class="col-sm-6 col-lg-8 smallPadding">
+                                        <table style="width:100%;">
+                                            <tr>
+                                                <td class="statement-header-2" style="width: 100px;">Username</dh>
+                                                <td class="statement-detail"><%= currentUser.charAt(0).toUpperCase() + currentUser.slice(1) %></dh>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2" style="width: 100px;">Currency</dh>
+                                                <td class="statement-detail"><%= currency_code %></dh>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2" style="width: 100px;">Date</dh>
+                                                <td class="statement-detail"><%= data[2] %></dh>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    
+                                    <div style = "margin-bottom: 60px;"></div>
+
+                                    <div class="col-sm-6 col-lg-4 smallPadding">
+                                        <table style="width:100%;">
+                                            <tr>
+                                                <th class="statement-header-1" style="padding-bottom: 10px;">Summary</th>
+                                                <th></th>
+                                            </tr>
+                                            <tr>
+                                                <th></th>
+                                                <th></th>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2">Period Start</td>
+                                                <td class="statement-detail" style="text-align: right;"><%= data[0][0].date %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2">Period End</td>
+                                                <td class="statement-detail" style="text-align: right;"><%= data[0][data[0].length - 1].date %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2">Number of Days</td>
+                                                <td class="statement-detail" style="text-align: right;"><%= data[0].length %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2">Opening Balance</td>
+                                                <td class="statement-detail" style="text-align: right;"><%= data[0][0].total %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2">Gift Amount</td>
+                                                <td class="statement-detail" style="text-align: right;"><%= data[1].reduce((accumulator, currentValue) => { return accumulator + (currentValue.type == 'Gift' ? parseFloat((currentValue.units_bought || '+0 0').toString().split('+')[1].split(' ')[0]) : 0 ); }, 0).toFixed(2) %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2">Number of Trades</td>
+                                                <td class="statement-detail" style="text-align: right;"><%= data[1].reduce((accumulator, currentValue) => { return accumulator + (currentValue.type == 'Trade' ? 1 : 0 ); }, 0) %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2">Closing Balance</td>
+                                                <td class="statement-detail" style="text-align: right;"><%= data[0][data[0].length - 1].total %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2">Average Daily Balance</td>
+                                                <td class="statement-detail" style="text-align: right;"><%= (data[0].reduce((accumulator, currentValue) => { return accumulator + currentValue.total;}, 0) / data[0].length).toFixed(2) %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2">Net Profit</td>
+                                                <td class="statement-detail" style="text-align: right;"><%= (data[0][data[0].length - 1].total - data[0][0].total).toFixed(2) %></td>
+                                            </tr>
+                                            <tr>
+                                                <th></th>
+                                                <th></th>
+                                            </tr>
+                                            <tr>
+                                                <th></th>
+                                                <th></th>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div style = "margin-bottom: 30px;"></div>
+
+                                <div class="row">
+                                    <div id="transactions" class="col-12 smallPadding" style = "margin-top: 40px;">
+                                        <h5 class="chart-title" style=" text-align: left; font-size: 20px;">Transactions</h5>
+                                        <div style = "margin-bottom: 10px;"></div>
+                                        <table style="width:100%;">
+                                            <tr>
+                                                <th class="recent-trades" style="text-align: left; color: darkslateblue; width: 100px;">Date</th> 
+                                                <th class="recent-trades recent-trades-hide" style="text-align: left; color: darkslateblue; width: 100px;">Type</th> 
+                                                <th class="recent-trades" style="text-align: left; color: darkslateblue; width: 100px;">Units Sold</th> 
+                                                <th class="recent-trades" style="text-align: left; color: darkslateblue;">Units Bought</th>
+                                                <th class="recent-trades recent-trades-hide" style="text-align: left; color: darkslateblue; text-align: right;">Daily Balance</th> 
+                                            </tr>
+                                            <tr>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades recent-trades-hide"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades recent-trades-hide"></th>
+                                            </tr>
+
+                                             <% for(var i = 0; i < data[1].length; i++) { %>
+
+                                                <tr style="border-bottom: 1px solid lightgray;">
+                                                    <td class="recent-trades" style="font-weight: 600; padding-left: 5px;"><%= data[1][i].date %></td>
+                                                    <td class="recent-trades recent-trades-hide" style="color: dimgray; font-weight: 600;"><%= data[1][i].type %></td>
+                                                    <td class="recent-trades" style="color: red; font-weight: 600;"><%= data[1][i].units_sold %></td>
+                                                    <td class="recent-trades" style="color: green; font-weight: 600;"><%= data[1][i].units_bought %></td>
+                                                    <td class="recent-trades recent-trades-hide" style="font-weight: 600; text-align: right;"><% if (data[1][i].daily_balance) { %> <%= data[1][i].daily_balance.toFixed(2) %><% } else { %> <%= acctTotal %><% } %></td>
+                                                </tr>
+                                            
+                                              <% } %>
+                                             <% if (data[1].length == 0) { %>
+
+                                                <tr style="border-bottom: 1px solid lightgray;">
+                                                    <td class="recent-trades" style="font-weight: 600; padding-left: 5px;">- none -</td>
+                                                    <td class="recent-trades recent-trades-hide" style="color: dimgray; font-weight: 600;"></td>
+                                                    <td class="recent-trades" style="color: red; font-weight: 600;"></td>
+                                                    <td class="recent-trades" style="color: green; font-weight: 600;"></td>
+                                                    <td class="recent-trades recent-trades-hide" style="font-weight: 600; text-align: right;"></td>
+                                                </tr>
+                                            
+                                              <% } %>
+
+                                            <tr>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades recent-trades-hide"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades recent-trades-hide"></th>
+                                            </tr>
+
+                                        </table>
+                                    </div>
+                                </div>
+
+
+                                <div style = "margin-bottom: 60px;"></div>
+
+                                <h3 class="statement-header-2" style="text-align: center;">- End of Statement -</h3>
+
+
+
+                                <div style="display: none;" id="data0"><%= data[0] %></div>
+                                <div style="display: none;" id="data1"><%= data[1] %></div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>    
+            </div>
+        </div>
+
+
+
+        <script>
+
+            function accountClicked(p) {
+                window.history.back();
+            }
+
+
+
+
+        </script>
+
+
+
+<% include partials/footerMenu.ejs %>
+
+
+
+    </body>
+</html>
+        
+
+
+		

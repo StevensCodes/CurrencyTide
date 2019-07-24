@@ -1,0 +1,770 @@
+<% include partials/header.ejs %>
+
+        <div class="world-background">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 smallPadding">
+                        <div class="rate-box-trade">
+                            <div class="container">
+                                <h1 class="world-msg col-lg-12">Quarterly Statement</h1>
+
+                                
+                                <a href="javascript:history.back()" style="position: absolute; top: 35px; color: darkslateblue; font-size: 25px;"><i class="fas fa-angle-double-left back-button"></i></a>
+                                
+                                <div style = "margin-bottom: 40px;"></div>
+
+                                <div class="row">
+                                    <div class="col-sm-6 col-lg-8 smallPadding">
+                                        <table style="width:100%;">
+                                            <tr>
+                                                <td class="statement-header-2" style="width: 100px;">Username</dh>
+                                                <td class="statement-detail"><%= currentUser.charAt(0).toUpperCase() + currentUser.slice(1) %></dh>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2" style="width: 100px;">Currency</dh>
+                                                <td class="statement-detail"><%= currency_code %></dh>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2" style="width: 100px;">Date</dh>
+                                                <td class="statement-detail"><%= data[6] %></dh>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    
+                                    <div style = "margin-bottom: 60px;"></div>
+
+                                    <div class="col-sm-6 col-lg-4 smallPadding">
+                                        <table style="width:100%;">
+                                            <tr>
+                                                <th class="statement-header-1" style="padding-bottom: 10px;">Summary</th>
+                                                <th></th>
+                                            </tr>
+                                            <tr>
+                                                <th></th>
+                                                <th></th>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2">Period Start</td>
+                                                <td class="statement-detail" style="text-align: right;"><%= data[0][0].date %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2">Period End</td>
+                                                <td class="statement-detail" style="text-align: right;"><%= data[0][data[0].length - 1].date %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2">Number of Days</td>
+                                                <td class="statement-detail" style="text-align: right;"><%= data[0].length %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2">Opening Balance</td>
+                                                <td class="statement-detail" style="text-align: right;"><%= data[0][0].total %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2">Gift Amount</td>
+                                                <td class="statement-detail" style="text-align: right;"><%= data[1].reduce((accumulator, currentValue) => { return accumulator + (currentValue.type == 'Gift' ? parseFloat((currentValue.units_bought || '+0 0').toString().split('+')[1].split(' ')[0]) : 0 ); }, 0).toFixed(2) %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2">Number of Trades</td>
+                                                <td class="statement-detail" style="text-align: right;"><%= data[1].reduce((accumulator, currentValue) => { return accumulator + (currentValue.type == 'Trade' ? 1 : 0 ); }, 0) %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2">Closing Balance</td>
+                                                <td class="statement-detail" style="text-align: right;"><%= data[0][data[0].length - 1].total %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2">Average Daily Balance</td>
+                                                <td class="statement-detail" style="text-align: right;"><%= (data[0].reduce((accumulator, currentValue) => { return accumulator + currentValue.total;}, 0) / data[0].length).toFixed(2) %></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="statement-header-2">Net Profit</td>
+                                                <td class="statement-detail" style="text-align: right;"><%= (data[0][data[0].length - 1].total - data[0][0].total).toFixed(2) %></td>
+                                            </tr>
+                                            <tr>
+                                                <th></th>
+                                                <th></th>
+                                            </tr>
+                                            <tr>
+                                                <th></th>
+                                                <th></th>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div style = "margin-bottom: 30px;"></div>
+
+                                <div class="row">
+                                    <div class="col-xl-6 smallPadding" style = "margin-top: 40px;">
+
+                                        <h5 class="chart-title" style=" text-align: left; font-size: 20px;">Allocation at Period Start</h5>
+                                        <div style = "margin-bottom: 10px;"></div>
+                                        <table style="width:100%;">
+                                            <tr>
+                                                <th class="recent-trades recent-trades-hide" style="text-align: right; color: darkslateblue; width: 25px;"></th> 
+                                                <th class="recent-trades" style="text-align: left; color: darkslateblue;">Currency</th> 
+                                                <th class="recent-trades" style="text-align: right; color: darkslateblue;">Number of Units</th> 
+                                                <th class="recent-trades recent-trades-hide" style="text-align: right; color: darkslateblue;">Value in <%= currency_code %></th>
+                                                <th class="recent-trades" style="color: darkslateblue; text-align: right;">Percent</th> 
+                                            </tr>
+                                            <tr>
+                                                <th class="recent-trades recent-trades-hide"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades recent-trades-hide"></th>
+                                                <th class="recent-trades"></th>
+                                            </tr>
+
+                                             <% for(var i = 0; i < data[2].length; i++) { %>
+
+                                                <tr style="border-bottom: 1px solid lightgray;">
+                                                    <td class="recent-trades recent-trades-hide" style="font-weight: 600; padding-left: 5px; tex-align: right;"><%= i + 1 %>.</td>
+                                                    <td class="recent-trades" style="color: dimgray; font-weight: 600;"><%= data[2][i].name %></td>
+                                                    <td class="recent-trades" style="font-weight: 600; text-align: right;"><%= data[2][i].units.toFixed(2) + ' ' + data[2][i].code %></td>
+                                                    <td class="recent-trades recent-trades-hide" style="font-weight: 600; text-align: right;"><%= data[2][i].value.toFixed(2) + ' ' + currency_code %></td>
+                                                    <td class="recent-trades" style="font-weight: 600; text-align: right;"><%= data[2][i].percent.toFixed(2) %>%</td>
+                                                </tr>
+                                            
+                                              <% } %>
+                                            <tr>
+                                                <th class="recent-trades recent-trades-hide"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades recent-trades-hide"></th>
+                                                <th class="recent-trades"></th>
+                                            </tr>
+
+                                        </table>
+
+                                        <div class="row">
+                                            <div class="col-lg-12 smallPadding" style = "margin-top: 40px;">
+                                                <div id="allocationStartChart" style = "height: 300px; width: 100%;">
+                                                    <svg></svg>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                    
+                                    
+                                    
+                                    <div class="col-xl-6 smallPadding" style = "margin-top: 40px;">
+
+                                        <h5 class="chart-title" style=" text-align: left; font-size: 20px;">Allocation at Period End</h5>
+                                        <div style = "margin-bottom: 10px;"></div>
+                                        <table style="width:100%;">
+                                            <tr>
+                                                <th class="recent-trades recent-trades-hide" style="text-align: right; color: darkslateblue; width: 25px;"></th> 
+                                                <th class="recent-trades" style="text-align: left; color: darkslateblue;">Currency</th> 
+                                                <th class="recent-trades" style="text-align: right; color: darkslateblue;">Number of Units</th> 
+                                                <th class="recent-trades recent-trades-hide" style="text-align: right; color: darkslateblue;">Value in <%= currency_code %></th>
+                                                <th class="recent-trades" style="color: darkslateblue; text-align: right;">Percent</th> 
+                                            </tr>
+                                            <tr>
+                                                <th class="recent-trades recent-trades-hide"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades recent-trades-hide"></th>
+                                                <th class="recent-trades"></th>
+                                            </tr>
+
+                                             <% for(var i = 0; i < data[3].length; i++) { %>
+
+                                                <tr style="border-bottom: 1px solid lightgray;">
+                                                    <td class="recent-trades recent-trades-hide" style="font-weight: 600; padding-left: 5px; tex-align: right;"><%= i + 1 %>.</td>
+                                                    <td class="recent-trades" style="color: dimgray; font-weight: 600;"><%= data[3][i].name %></td>
+                                                    <td class="recent-trades" style="font-weight: 600; text-align: right;"><%= data[3][i].units.toFixed(2) + ' ' + data[3][i].code %></td>
+                                                    <td class="recent-trades recent-trades-hide" style="font-weight: 600; text-align: right;"><%= data[3][i].value.toFixed(2) + ' ' + currency_code %></td>
+                                                    <td class="recent-trades" style="font-weight: 600; text-align: right;"><%= data[3][i].percent.toFixed(2) %>%</td>
+                                                </tr>
+                                            
+                                              <% } %>
+                                            <tr>
+                                                <th class="recent-trades recent-trades-hide"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades recent-trades-hide"></th>
+                                                <th class="recent-trades"></th>
+                                            </tr>
+
+                                        </table>
+
+                                        <div class="row">
+                                            <div class="col-lg-12 smallPadding" style = "margin-top: 40px;">
+                                                <div id="allocationEndChart" style = "height: 300px; width: 100%;">
+                                                    <svg></svg>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+
+
+
+                                <div class="row">
+                                    <div class="col-xl-6 smallPadding" style = "margin-top: 40px;">
+
+                                        <h5 class="chart-title" style=" text-align: left; font-size: 20px;">Currencies by Number of Trades</h5>
+                                        <div style = "margin-bottom: 10px;"></div>
+                                        <table style="width:100%;">
+                                            <tr>
+                                                <th class="recent-trades recent-trades-hide" style="text-align: right; color: darkslateblue; width: 25px;"></th> 
+                                                <th class="recent-trades" style="text-align: left; color: darkslateblue; width: 100px;">Currency</th> 
+                                                <th class="recent-trades" style="text-align: right; color: darkslateblue; width: 60px;">Trades</th> 
+                                                <th class="recent-trades" style="text-align: right; color: darkslateblue;">Sale Amount</th>
+                                                <th class="recent-trades" style="color: darkslateblue; text-align: right;">Sale Value</th> 
+                                            </tr>
+                                            <tr>
+                                                <th class="recent-trades recent-trades-hide"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                            </tr>
+
+                                             <% for(var i = 0; i < data[4][0].length; i++) { %>
+
+                                                <tr style="border-bottom: 1px solid lightgray;">
+                                                    <td class="recent-trades recent-trades-hide" style="font-weight: 600; padding-left: 5px; tex-align: right;"><%= i + 1 %>.</td>
+                                                    <td class="recent-trades" style="color: dimgray; font-weight: 600;"><%= data[4][0][i].currency_sold %></td>
+                                                    <td class="recent-trades" style="color: red; font-weight: 600; text-align: right;"><%= data[4][0][i].count_sold %></td>
+                                                    <td class="recent-trades" style="color: red; font-weight: 600; text-align: right;"><%= data[4][0][i].units_sold.toFixed(2) + ' ' + data[4][0][i].currency_sold %></td>
+                                                    <td class="recent-trades" style="color: red; font-weight: 600; text-align: right;"><%= data[4][0][i].value_sold.toFixed(2) + ' ' + currency_code  %></td>
+                                                </tr>
+                                            
+                                              <% } %>
+                                            <tr>
+                                                <th class="recent-trades recent-trades-hide"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                            </tr>
+
+                                        </table>
+
+                                    </div>
+                                    
+                                    <div class="col-xl-6 smallPadding" style = "margin-top: 40px;">
+
+                                        <div style="height: 24px;"></div>
+                                        <div style = "margin-bottom: 10px;"></div>
+                                        <table style="width:100%;">
+                                            <tr>
+                                                <th class="recent-trades recent-trades-hide" style="text-align: right; color: darkslateblue; width: 25px;"></th> 
+                                                <th class="recent-trades" style="text-align: left; color: darkslateblue; width: 100px;">Currency</th> 
+                                                <th class="recent-trades" style="text-align: right; color: darkslateblue; width: 60px;">Trades</th> 
+                                                <th class="recent-trades" style="text-align: right; color: darkslateblue;">Purchase Amount</th>
+                                                <th class="recent-trades" style="color: darkslateblue; text-align: right;">Purchase Value</th> 
+                                            </tr>
+                                            <tr>
+                                                <th class="recent-trades recent-trades-hide"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                            </tr>
+
+                                             <% for(var i = 0; i < data[4][1].length; i++) { %>
+
+                                                <tr style="border-bottom: 1px solid lightgray;">
+                                                    <td class="recent-trades recent-trades-hide" style="font-weight: 600; padding-left: 5px; tex-align: right;"><%= i + 1 %>.</td>
+                                                    <td class="recent-trades" style="color: dimgray; font-weight: 600;"><%= data[4][1][i].currency_bought %></td>
+                                                    <td class="recent-trades" style="color: green; font-weight: 600; text-align: right;"><%= data[4][1][i].count_bought %></td>
+                                                    <td class="recent-trades" style="color: green; font-weight: 600; text-align: right;"><%= data[4][1][i].units_bought.toFixed(2) + ' ' + data[4][1][i].currency_bought %></td>
+                                                    <td class="recent-trades" style="color: green; font-weight: 600; text-align: right;"><%= data[4][1][i].value_bought.toFixed(2) + ' ' + currency_code  %></td>
+                                                </tr>
+                                            
+                                              <% } %>
+                                            <tr>
+                                                <th class="recent-trades recent-trades-hide"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                            </tr>
+
+                                        </table>
+                                        
+                                    </div>
+                                </div>
+
+
+
+                                <div class="row">
+                                    <div class="col-xl-6 smallPadding" style = "margin-top: 40px;">
+
+                                        <h5 class="chart-title" style=" text-align: left; font-size: 20px;">Currencies by Value of Trades</h5>
+                                        <div style = "margin-bottom: 10px;"></div>
+                                        <table style="width:100%;">
+                                            <tr>
+                                                <th class="recent-trades recent-trades-hide" style="text-align: right; color: darkslateblue; width: 25px;"></th> 
+                                                <th class="recent-trades" style="text-align: left; color: darkslateblue; width: 100px;">Currency</th> 
+                                                <th class="recent-trades" style="text-align: right; color: darkslateblue; width: 60px;">Trades</th> 
+                                                <th class="recent-trades" style="text-align: right; color: darkslateblue;">Sale Amount</th>
+                                                <th class="recent-trades" style="color: darkslateblue; text-align: right;">Sale Value</th> 
+                                            </tr>
+                                            <tr>
+                                                <th class="recent-trades recent-trades-hide"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                            </tr>
+
+                                             <% for(var i = 0; i < data[4][2].length; i++) { %>
+
+                                                <tr style="border-bottom: 1px solid lightgray;">
+                                                    <td class="recent-trades recent-trades-hide" style="font-weight: 600; padding-left: 5px; tex-align: right;"><%= i + 1 %>.</td>
+                                                    <td class="recent-trades" style="color: dimgray; font-weight: 600;"><%= data[4][2][i].currency_sold %></td>
+                                                    <td class="recent-trades" style="color: red; font-weight: 600; text-align: right;"><%= data[4][2][i].count_sold %></td>
+                                                    <td class="recent-trades" style="color: red; font-weight: 600; text-align: right;"><%= data[4][2][i].units_sold.toFixed(2) + ' ' + data[4][2][i].currency_sold %></td>
+                                                    <td class="recent-trades" style="color: red; font-weight: 600; text-align: right;"><%= data[4][2][i].value_sold.toFixed(2) + ' ' + currency_code  %></td>
+                                                </tr>
+                                            
+                                              <% } %>
+                                            <tr>
+                                                <th class="recent-trades recent-trades-hide"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                            </tr>
+
+                                        </table>
+
+                                    </div>
+                                    
+                                    <div class="col-xl-6 smallPadding" style = "margin-top: 40px;">
+
+                                        <div style="height: 24px;"></div>
+                                        <div style = "margin-bottom: 10px;"></div>
+                                        <table style="width:100%;">
+                                            <tr>
+                                                <th class="recent-trades recent-trades-hide" style="text-align: right; color: darkslateblue; width: 25px;"></th> 
+                                                <th class="recent-trades" style="text-align: left; color: darkslateblue; width: 100px;">Currency</th> 
+                                                <th class="recent-trades" style="text-align: right; color: darkslateblue; width: 60px;">Trades</th> 
+                                                <th class="recent-trades" style="text-align: right; color: darkslateblue;">Purchase Amount</th>
+                                                <th class="recent-trades" style="color: darkslateblue; text-align: right;">Purchase Value</th> 
+                                            </tr>
+                                            <tr>
+                                                <th class="recent-trades recent-trades-hide"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                            </tr>
+
+                                             <% for(var i = 0; i < data[4][3].length; i++) { %>
+
+                                                <tr style="border-bottom: 1px solid lightgray;">
+                                                    <td class="recent-trades recent-trades-hide" style="font-weight: 600; padding-left: 5px; tex-align: right;"><%= i + 1 %>.</td>
+                                                    <td class="recent-trades" style="color: dimgray; font-weight: 600;"><%= data[4][1][i].currency_bought %></td>
+                                                    <td class="recent-trades" style="color: green; font-weight: 600; text-align: right;"><%= data[4][3][i].count_bought %></td>
+                                                    <td class="recent-trades" style="color: green; font-weight: 600; text-align: right;"><%= data[4][3][i].units_bought.toFixed(2) + ' ' + data[4][3][i].currency_bought %></td>
+                                                    <td class="recent-trades" style="color: green; font-weight: 600; text-align: right;"><%= data[4][3][i].value_bought.toFixed(2) + ' ' + currency_code  %></td>
+                                                </tr>
+                                            
+                                              <% } %>
+                                            <tr>
+                                                <th class="recent-trades recent-trades-hide"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                                <th class="recent-trades"></th>
+                                            </tr>
+
+                                        </table>
+                                        
+                                    </div>
+                                </div>
+
+
+
+
+                                <div class="row">
+                                    <div class="col-lg-12 smallPadding" style = "margin-top: 40px;">
+                                        <h5 class="chart-title" style=" text-align: left; font-size: 20px;">Currency Perfrormance by % Value Change</h5>
+                                        <div style="height: 10px;"></div>
+
+                                        <div id="bestWorstCurrenciesChart" style = "height: 300px; width: 100%;">
+                                            <svg></svg>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div style = "margin-bottom: 60px;"></div>
+
+                                <h3 class="statement-header-2" style="text-align: center;">- End of Statement -</h3>
+
+
+
+                                <div style="display: none;" id="data0"><%= data[0] %></div>
+                                <div style="display: none;" id="data1"><%= data[1] %></div>
+                                <div style="display: none;" id="data2"><% for(var i = 0; i < data[2].length; i++) { %><%= data[2][i].code %>,<%= data[2][i].percent %>:<% } %></div>
+                                <div style="display: none;" id="data3"><% for(var i = 0; i < data[3].length; i++) { %><%= data[3][i].code %>,<%= data[3][i].percent %>:<% } %></div>
+                                <div style="display: none;" id="data4"><%= data[4] %></div>
+                                <div style="display: none;" id="data5"><% for(var i = 0; i < data[5].length; i++) { %><%= data[5][i].exchange %>,<%= data[5][i].diff %>:<% } %></div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>    
+            </div>
+        </div>
+
+<style>
+    
+    @media only screen and (min-width: 0px) and (max-width: 567px)  {
+        .nv-x text{
+            font-size: 5px;
+        }
+    
+        .nv-discretebar text{
+            font-size: 5px;
+        }
+    }
+
+    @media only screen and (min-width: 568px) and (max-width: 767px)  {
+        .nv-x text{
+            font-size: 9px;
+        }
+    
+        .nv-discretebar text{
+            font-size: 9px;
+        }
+    }
+
+
+
+</style>
+
+
+        <script>
+
+            //Allocation at Start Chart
+            
+            var asdata = [];
+
+            var asarr = document.getElementById("data2").innerHTML.substring(0, document.getElementById("data2").innerHTML.length - 1).split(':');
+            asarr.forEach(function(p) {
+                asdata.push({"label" : p.split(',')[0], "value" : p.split(',')[1]});
+            });
+
+
+            nv.addGraph(function() {
+                var aschart = nv.models.pieChart()
+                    .x(function(d) { return d.label })
+                    .y(function(d) { return d.value })
+                    .showLegend(false)
+                    .showLabels(true)
+                    .labelsOutside(true)
+                    .labelThreshold(.001);
+                    
+                    aschart.color(function(data){
+                        switch(data.label) {
+                            case 'AUD':
+                                return "#1f77b4"
+                                break;
+                            case 'BRL':
+                                return "#aec7e8"
+                                break;
+                            case 'CAD':
+                                return "#ff7f0e"
+                                break;
+                            case 'CHF':
+                                return "#ffbb78"
+                                break;
+                            case 'CNY':
+                                return "#2ca02c"
+                                break;
+                            case 'EUR':
+                                return "#98df8a"
+                                break;
+                            case 'GBP':
+                                return "#d62728"
+                                break;
+                            case 'HKD':
+                                return "#ff9896"
+                                break;
+                            case 'INR':
+                                return "#9467bd"
+                                break;
+                            case 'JPY':
+                                return "#c5b0d5"
+                                break;
+                            case 'KRW':
+                                return "#8c564b"
+                                break;
+                            case 'MXN':
+                                return "#c49c94"
+                                break;
+                            case 'NOK':
+                                return "#e377c2"
+                                break;
+                            case 'NZD':
+                                return "#f7b6d2"
+                                break;
+                            case 'RUB':
+                                return "#7f7f7f"
+                                break;
+                            case 'SEK':
+                                return "#c7c7c7"
+                                break;
+                            case 'SGD':
+                                return "#bcbd22"
+                                break;
+                            case 'TRY':
+                                return "#dbdb8d"
+                                break;
+                            case 'USD':
+                                return "#17becf"
+                                break;
+                            case 'ZAR':
+                                return "#9edae5"
+                                break;
+                            default:
+                                return 'Black'
+                        }
+                    });
+                    
+                    aschart.tooltip.contentGenerator(function(data) {
+                        return data.data.value + '%';
+                    });
+
+            
+                d3.select("#allocationStartChart svg")
+                    .datum(asdata)
+                    .transition().duration(1200)
+                    .call(aschart);
+
+                nv.utils.windowResize(aschart.update);
+
+                return aschart;
+            });
+
+
+
+            //Allocation at End Chart
+            
+            var aedata = [];
+
+            var aearr = document.getElementById("data3").innerHTML.substring(0, document.getElementById("data3").innerHTML.length - 1).split(':');
+            aearr.forEach(function(p) {
+                aedata.push({"label" : p.split(',')[0], "value" : p.split(',')[1]});
+            });
+
+
+            nv.addGraph(function() {
+                var aechart = nv.models.pieChart()
+                    .x(function(d) { return d.label })
+                    .y(function(d) { return d.value })
+                    .showLegend(false)
+                    .showLabels(true)
+                    .labelsOutside(true)
+                    .labelThreshold(.001);
+                    
+                    
+                    aechart.tooltip.contentGenerator(function(data) {
+                        return data.data.value + '%';
+                    });
+
+                    aechart.color(function(data){
+                        switch(data.label) {
+                            case 'AUD':
+                                return "#1f77b4"
+                                break;
+                            case 'BRL':
+                                return "#aec7e8"
+                                break;
+                            case 'CAD':
+                                return "#ff7f0e"
+                                break;
+                            case 'CHF':
+                                return "#ffbb78"
+                                break;
+                            case 'CNY':
+                                return "#2ca02c"
+                                break;
+                            case 'EUR':
+                                return "#98df8a"
+                                break;
+                            case 'GBP':
+                                return "#d62728"
+                                break;
+                            case 'HKD':
+                                return "#ff9896"
+                                break;
+                            case 'INR':
+                                return "#9467bd"
+                                break;
+                            case 'JPY':
+                                return "#c5b0d5"
+                                break;
+                            case 'KRW':
+                                return "#8c564b"
+                                break;
+                            case 'MXN':
+                                return "#c49c94"
+                                break;
+                            case 'NOK':
+                                return "#e377c2"
+                                break;
+                            case 'NZD':
+                                return "#f7b6d2"
+                                break;
+                            case 'RUB':
+                                return "#7f7f7f"
+                                break;
+                            case 'SEK':
+                                return "#c7c7c7"
+                                break;
+                            case 'SGD':
+                                return "#bcbd22"
+                                break;
+                            case 'TRY':
+                                return "#dbdb8d"
+                                break;
+                            case 'USD':
+                                return "#17becf"
+                                break;
+                            case 'ZAR':
+                                return "#9edae5"
+                                break;
+                            default:
+                                return 'Black'
+                        }
+                    });
+            
+                d3.select("#allocationEndChart svg")
+                    .datum(aedata)
+                    .transition().duration(1200)
+                    .call(aechart);
+
+                nv.utils.windowResize(aechart.update);
+
+                return aechart;
+            });
+
+
+            //Best Worst Currency Chart
+
+            var bwdata = [];
+            var vbwdata = [];
+            var bwarr = document.getElementById("data5").innerHTML.substring(0, document.getElementById("data5").innerHTML.length - 1).split(':');
+            bwarr.forEach(function(p) {
+                vbwdata.push({"label" : p.split(',')[0], "value" : Number(p.split(',')[1])});
+            });
+            
+            bwdata.push({key: "", values: vbwdata});
+
+            nv.addGraph(function() {
+                var bwchart = nv.models.discreteBarChart()
+                    .x(function(d) { return d.label })
+                    .y(function(d) { return d.value })
+                    .showValues(true);
+                    
+                    bwchart.color(function(data){
+                        switch(data.label) {
+                            case 'AUD':
+                                return "#1f77b4"
+                                break;
+                            case 'BRL':
+                                return "#aec7e8"
+                                break;
+                            case 'CAD':
+                                return "#ff7f0e"
+                                break;
+                            case 'CHF':
+                                return "#ffbb78"
+                                break;
+                            case 'CNY':
+                                return "#2ca02c"
+                                break;
+                            case 'EUR':
+                                return "#98df8a"
+                                break;
+                            case 'GBP':
+                                return "#d62728"
+                                break;
+                            case 'HKD':
+                                return "#ff9896"
+                                break;
+                            case 'INR':
+                                return "#9467bd"
+                                break;
+                            case 'JPY':
+                                return "#c5b0d5"
+                                break;
+                            case 'KRW':
+                                return "#8c564b"
+                                break;
+                            case 'MXN':
+                                return "#c49c94"
+                                break;
+                            case 'NOK':
+                                return "#e377c2"
+                                break;
+                            case 'NZD':
+                                return "#f7b6d2"
+                                break;
+                            case 'RUB':
+                                return "#7f7f7f"
+                                break;
+                            case 'SEK':
+                                return "#c7c7c7"
+                                break;
+                            case 'SGD':
+                                return "#bcbd22"
+                                break;
+                            case 'TRY':
+                                return "#dbdb8d"
+                                break;
+                            case 'USD':
+                                return "#17becf"
+                                break;
+                            case 'ZAR':
+                                return "#9edae5"
+                                break;
+                            default:
+                                return 'Black'
+                        }
+                    });
+
+                bwchart.tooltip.contentGenerator(function(data) {
+                    return data.data.value + '%';
+                });
+
+                
+
+                d3.select("#bestWorstCurrenciesChart svg")
+                    .datum(bwdata)
+                    .transition().duration(500)
+                    .call(bwchart);
+
+                
+                nv.utils.windowResize(bwchart.update);
+
+                return bwchart;
+            });
+
+
+            function accountClicked(p) {
+                window.history.back();     
+            }
+
+
+        </script>
+
+
+
+<% include partials/footerMenu.ejs %>
+
+
+
+    </body>
+</html>
+        
+
+
+		

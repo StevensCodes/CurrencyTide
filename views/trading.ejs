@@ -1,0 +1,387 @@
+<% include partials/header.ejs %>
+
+        <div class="world-background">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 smallPadding">
+                        <div class="rate-box-trade">
+                            <div class="container">
+                                <h1 class="world-msg col-lg-12">Trading Board</h1>
+
+
+                                <div style="padding-bottom:1px;">
+                                    <div style="font-weight:bold; color:darkslateblue; font-size: 18px;">Base Currency - <%= currency_code%></div>
+                                    <h3><img src="/Flags/<%= currency_code %>.png" alt="" height=28 style="box-shadow: 0px 1px 3px 1px rgba(0,0,0,0.15);"></img></h3>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-sm-12 col-md-4">
+                                    </div>
+                                    <div class="col-sm-12 col-md-4 smallPadding">
+                                        <div style="text-align: center;">
+                                            <p style="color:darkslateblue; display: inline-block; font-size:18px; font-weight: bold;">Show:&nbsp;</p>
+                                            <p id="rates_btn" style="color:darkslateblue; display: inline-block; font-size:18px; font-weight: bold; cursor: pointer; <% if(rates_or_prices == 'Rates') { %>border-bottom: 2px solid;<% } else { %>border-bottom: 0px solid;<% } %>" onclick="ratesChanged()">Rates</p>
+                                            <p style="color:darkslateblue; display: inline-block; font-size:18px; font-weight: bold;">&nbsp;/&nbsp;</p>
+                                            <p id="prices_btn" style="color:darkslateblue; display: inline-block; font-size:18px; font-weight: bold; cursor: pointer; <% if(rates_or_prices == 'Prices') { %>border-bottom: 2px solid;<% } else { %>border-bottom: 0px solid;<% } %>" onclick="pricesChanged()">Prices</p>
+                                        </div>
+                                        <div class="exchange-values">
+                                            <p style="color:black; display: inline-block; font-size:14px; font-weight: bold;">We Buy at&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+                                            <p style="color:black; display: inline-block; font-size:14px; font-weight: bold;">We Sell at</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-4">
+                                    </div>
+                                </div>
+                                
+                                <% for(var i = 0; i < data.length; i++) { %>
+
+                                    <div class="row">
+    
+                                        <div class="col-5 col-md-4 order-md-1 smallPadding" style="border-top: 1px solid #dddddd;">
+                                            <img src="/Flags/<%= data[i].code %>.png" alt="" height=18 style="margin-bottom:1px; margin-right:5px; box-shadow: 0px 1px 3px 1px rgba(0,0,0,0.15);"></img> <%= data[i].code %><br><span style="font-size: 10px; vertical-align: top;"><%= data[i].name %></span>
+                                        </div>
+                                        <div class="col-7 col-md-4 order-md-3 nopadding" style="border-top: 1px solid #dddddd;">
+                                            <div style="display: inline-block; width: 120px;">
+                                                <span id="units_<%= data[i].code %>"><%= data[i].units %></span>
+                                            </div>
+                                            <div style="display: inline-block; width: 50px;">
+                                                <% if(data[i].units) { %> <button id="tradeBtn_<%= data[i].code %>" type="button" onclick="tradeBtnClicked(this)" style="background: darkslateblue; opacity: 1; color: white; border: none; border-radius: 5px; margin-top: 2px; cursor: pointer; width: 50px;">Trade</button> <% } %>
+                                            </div>
+                                            <% if(data[i].value_in_base_currency) { %><br><span style="font-size: 13px; vertical-align: top;">(<%= data[i].value_in_base_currency.toFixed(2) %> <%= currency_code%>)</span> <% } %>
+                                        </div>
+
+                                        <div class="col-12 col-md-4 order-md-2 trading-div smallPadding">
+                                            <div class="trading-values">
+                                                <div style="display: inline-block; width: 10px;">
+                                                    <% if(data[i].trend == -1) { %> <img src="/Flags/down_arrow.png" alt="" height=10></img> <% } else if(data[i].trend == 0 && data[i].graph == 1) { %> <img src="/Flags/equal_sign.png" alt="" height=8></img> <% } else if(data[i].trend == 1) { %> <img src="/Flags/up_arrow.png" alt="" height=10></img> <% } %>
+                                                </div>
+                                                <div style="display: inline-block; width: 82px; font-size: 13px;">
+                                                    <span id="buyExchange_<%= data[i].code %>"><%= data[i].buy %></span>
+                                                </div>
+                                                <div style="display: inline-block; width: 82px; font-size: 13px;">
+                                                    <span id="sellExchange_<%= data[i].code %>"><%= data[i].sell %></span>
+                                                </div>
+                                                <div style="display: inline-block; width: 10px;">
+                                                    <span id="graph_<%= data[i].code %>" onclick="graphClicked(this)"><% if(data[i].graph == 1) { %> <img src="/Flags/graph_icon.png" alt="" height=11 style="cursor: pointer"></img> <% } %></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                    <div class="row">                                    
+                                        
+                                        <div id="tradeRow_<%= data[i].code %>" class="col-12 smallPadding" style="display: none; background-color: #e6e6e6; text-align: center;">
+                                            <div>
+                                                <span style="font-color: darkslateblue; font-weight: bold;">Sell</span> <span style="display: inline-block; width: 62px;"><%= data[i].code %></span> <input type="number" value="0.00" min="0" max="9999999999" step="0.01" id="sellAmount_<%= data[i].code %>" onchange="sellAmountOnChange(this)" oninput="sellAmountOnInput(this)" onclick="sellAmountOnClick(this)" style="background-color: #e0dcef;"> <button id="confirmBtn_<%= data[i].code %>" type="button" onclick="confirmBtnClicked(this)" style="background: #66cc94; opacity: 1; color: white; border: none; border-radius: 5px; margin-top: 2px; cursor: pointer; width: 65px;">Confirm</button>
+                                            </div>
+                                            <div>
+                                                <span style="font-color: darkslateblue; font-weight: bold;">Buy</span> <select id="exchangeCurrencySelector_<%= data[i].code %>" onchange="buyCurrencyOnChange(this)"> 
+                                                        <% for(var j = 0; j < data.length; j++) { %>
+                                                        	<% if (data[j].code != data[i].code) { %>
+                                                        		<option value="<%= data[j].code %>"><%= data[j].code %></option>
+                                                        	<% } %>
+                                                        <% } %>
+                                                    </select>
+                                                    <input type="number" value="0.00" min="0" max="9999999999" step="0.01" id="buyAmount_<%= data[i].code %>" onchange="buyAmountOnChange(this)" oninput="buyAmountOnInput(this)" onclick="buyAmountOnClick(this)"> <button id="cancelBtn_<%= data[i].code %>" type="button" onclick="cancelBtnClicked(this)" style="background: #f18e8e; opacity: 1; color: white; border: none; border-radius: 5px; margin-top: 2px; cursor: pointer; width: 65px;">Cancel</button>
+                                            </div>
+                                        </div>
+    
+                                    </div>
+                                
+                                <% } %>
+
+                                    <div class="row">
+     
+                                        <div class="col-5 col-md-4 order-md-1 smallPadding" style="color: darkslateblue; font-weight: bold; font-size: 18px; padding-top: 5px; border-top: 1px solid #dddddd;">
+                                            Total
+                                        </div>
+                                        <div class="col-7 col-md-4 order-md-3 nopadding" style="padding-top: 5px; border-top: 1px solid #dddddd;">
+                                            <%= total + ' ' + currency_code %><img src="/Flags/graph_icon.png" alt="" height=14 style="cursor: pointer; padding-left: 10px;" onclick="accountClicked(this)"></img>
+                                        </div>
+
+                                        <div class="col-12 col-md-4 order-md-2 trading-div nopadding">
+                                        </div>
+                                        
+                                    </div>
+                                
+
+
+                                <div style="display: none;" id="base_curr"><%= currency_code%></div>
+                                <div style="display: none;" id="total"><%= total%></div>
+                                <div style="display: none;" id="sell_buy_rate_or_price"><%= rates_or_prices%></div>
+                                <div style="display: none;" id="curUser"><%= currentUser%></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>    
+            </div>
+        </div>
+
+
+
+        <script>
+        
+
+            
+            function post(path, params, method) {
+                method = method || "post"; // Set method to post by default if not specified.
+            
+                // The rest of this code assumes you are not using a library.
+                // It can be made less wordy if you use one.
+                var form = document.createElement("form");
+                form.setAttribute("method", method);
+                form.setAttribute("action", path);
+            
+                for(var key in params) {
+                    if(params.hasOwnProperty(key)) {
+                        var hiddenField = document.createElement("input");
+                        hiddenField.setAttribute("type", "hidden");
+                        hiddenField.setAttribute("name", key);
+                        hiddenField.setAttribute("value", params[key]);
+            
+                        form.appendChild(hiddenField);
+                    }
+                }
+            
+                document.body.appendChild(form);
+                form.submit();
+            }
+
+    
+            function ratesChanged() {
+                if (document.getElementById("rates_btn").getAttribute("style") != "color:darkslateblue; display: inline-block; font-size:18px; font-weight: bold; cursor: pointer; border-bottom: 2px solid;") {
+                    document.getElementById("prices_btn").setAttribute("style", "color:darkslateblue; display: inline-block; font-size:18px; font-weight: bold; cursor: pointer; border-bottom: 0px solid;");
+                    document.getElementById("rates_btn").setAttribute("style", "color:darkslateblue; display: inline-block; font-size:18px; font-weight: bold; cursor: pointer; border-bottom: 2px solid;");
+
+                    post('/trading', {rtsPrs: "Rates"});
+                }
+            }
+        
+            function pricesChanged() {
+                    if (document.getElementById("prices_btn").getAttribute("style") != "color:darkslateblue; display: inline-block; font-size:18px; font-weight: bold; cursor: pointer; border-bottom: 2px solid;") {
+                    document.getElementById("rates_btn").setAttribute("style", "color:darkslateblue; display: inline-block; font-size:18px; font-weight: bold; cursor: pointer; border-bottom: 0px solid;");
+                    document.getElementById("prices_btn").setAttribute("style", "color:darkslateblue; display: inline-block; font-size:18px; font-weight: bold; cursor: pointer; border-bottom: 2px solid;");
+
+                    post('/trading', {rtsPrs: "Prices"});
+                }
+            }
+
+        
+            function graphClicked(e) {
+                var x = document.getElementById("base_curr").innerHTML;
+                var exc = e.id.slice(6,9);
+
+                var y;
+                if (document.getElementById("prices_btn").getAttribute("style") == "color:darkslateblue; display: inline-block; font-size:18px; font-weight: bold; cursor: pointer; border-bottom: 2px solid;") {
+                    y = 'Prices';
+                } else {
+                    y = 'Rates';
+                };
+            
+                post('/graphs', {curCode: x, excCode: exc, rtsPrs: y});
+            }
+
+
+
+            function tradeBtnClicked(e) {
+                var show = 0;
+                if (document.getElementById("tradeRow_" + e.id.slice(9,12)).getAttribute("style") == "display: none; background-color: #e6e6e6; text-align: center;") { 
+                    show = 1;
+                }
+
+                document.getElementById("tradeRow_AUD").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");document.getElementById("tradeRow_BRL").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");
+                document.getElementById("tradeRow_CAD").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");document.getElementById("tradeRow_CHF").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");
+                document.getElementById("tradeRow_CNY").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");document.getElementById("tradeRow_EUR").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");
+                document.getElementById("tradeRow_GBP").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");document.getElementById("tradeRow_HKD").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");
+                document.getElementById("tradeRow_INR").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");document.getElementById("tradeRow_JPY").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");
+                document.getElementById("tradeRow_KRW").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");document.getElementById("tradeRow_MXN").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");
+                document.getElementById("tradeRow_NOK").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");document.getElementById("tradeRow_NZD").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");
+                document.getElementById("tradeRow_RUB").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");document.getElementById("tradeRow_SEK").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");
+                document.getElementById("tradeRow_SGD").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");document.getElementById("tradeRow_TRY").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");
+                document.getElementById("tradeRow_USD").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");document.getElementById("tradeRow_ZAR").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");
+                
+                
+                if (show == 1) {
+                    document.getElementById("tradeRow_" + e.id.slice(9,12)).setAttribute("style", "display: block; background-color: #e6e6e6; text-align: center;");                    
+                }
+
+            }
+
+
+
+
+
+            var lastModified = "Sell";
+
+            function sellAmountOnChange(p) {
+                document.getElementById(p.id).value = (parseFloat(p.value).toFixed(2) > 0) ? parseFloat(p.value).toFixed(2) : parseFloat(0).toFixed(2);
+                
+                if (document.getElementById("sellAmount_" + p.id.slice(11, 14)).value >= 0.01 && document.getElementById("buyAmount_" + p.id.slice(11, 14)).value >= 0.01) {
+                } else {
+                    document.getElementById("sellAmount_" + p.id.slice(11, 14)).value = parseFloat(0).toFixed(2);
+                    document.getElementById("buyAmount_" + p.id.slice(11, 14)).value =  parseFloat(0).toFixed(2);
+                }
+
+                lastModified = "Sell";
+                document.getElementById(p.id).setAttribute("style", "background-color: #e0dcef;");
+                document.getElementById("buyAmount_" + p.id.slice(11, 14)).setAttribute("style", "background-color: white;");
+
+            }
+
+            function sellAmountOnInput(p) {
+                if (Number(parseFloat(p.value).toFixed(2)) > Number(parseFloat(document.getElementById("units_" + p.id.slice(11, 14)).innerHTML.split(" ")[0]).toFixed(2))) {
+                    document.getElementById(p.id).value = parseFloat(document.getElementById("units_" + p.id.slice(11, 14)).innerHTML.split(" ")[0]).toFixed(2);
+                } else {
+                    //document.getElementById(p.id).value = p.value;
+                }
+
+                if (Number(parseFloat(p.value).toFixed(2) > 0)) {
+                    if (document.getElementById("sell_buy_rate_or_price").innerHTML == "Rates") {
+                        document.getElementById("buyAmount_" + p.id.slice(11, 14)).value = parseFloat(document.getElementById(p.id).value / document.getElementById("buyExchange_" + p.id.slice(11, 14)).innerHTML * document.getElementById("sellExchange_" + document.getElementById("exchangeCurrencySelector_" + p.id.slice(11, 14)).value).innerHTML).toFixed(2);
+                    } else {
+                        document.getElementById("buyAmount_" + p.id.slice(11, 14)).value = parseFloat(document.getElementById(p.id).value * document.getElementById("buyExchange_" + p.id.slice(11, 14)).innerHTML / document.getElementById("sellExchange_" + document.getElementById("exchangeCurrencySelector_" + p.id.slice(11, 14)).value).innerHTML).toFixed(2);                    
+                    }
+                }
+                lastModified = "Sell";
+                document.getElementById(p.id).setAttribute("style", "background-color: #e0dcef;");
+                document.getElementById("buyAmount_" + p.id.slice(11, 14)).setAttribute("style", "background-color: white;");
+
+            }
+
+
+
+
+            function buyAmountOnChange(p) {
+                document.getElementById(p.id).value = (parseFloat(p.value).toFixed(2) > 0) ? parseFloat(p.value).toFixed(2) : parseFloat(0).toFixed(2);
+
+                if (document.getElementById("sellAmount_" + p.id.slice(10, 13)).value >= 0.01 && document.getElementById("buyAmount_" + p.id.slice(10, 13)).value >= 0.01) {
+                } else {
+                    document.getElementById("sellAmount_" + p.id.slice(10, 13)).value = parseFloat(0).toFixed(2);
+                    document.getElementById("buyAmount_" + p.id.slice(10, 13)).value =  parseFloat(0).toFixed(2);
+                }
+
+                lastModified = "Buy";
+                document.getElementById(p.id).setAttribute("style", "background-color: #e0dcef;");
+                document.getElementById("sellAmount_" + p.id.slice(10, 13)).setAttribute("style", "background-color: white;");
+
+            }
+
+            function buyAmountOnInput(p) {
+                if (parseFloat(p.value).toFixed(2) < 0) {
+                    //document.getElementById(p.id).value = parseFloat(p.value).toFixed(2);
+                } else {
+                    //document.getElementById(p.id).value = p.value;
+                }
+                
+                if (Number(parseFloat(p.value).toFixed(2) > 0)) {
+                    if (document.getElementById("sell_buy_rate_or_price").innerHTML == "Rates") {
+                        document.getElementById("sellAmount_" + p.id.slice(10, 13)).value = parseFloat(document.getElementById(p.id).value / document.getElementById("sellExchange_" + document.getElementById("exchangeCurrencySelector_" + p.id.slice(10, 13)).value).innerHTML * document.getElementById("buyExchange_" + p.id.slice(10, 13)).innerHTML).toFixed(2);
+                    } else {
+                        document.getElementById("sellAmount_" + p.id.slice(10, 13)).value = parseFloat(document.getElementById(p.id).value * document.getElementById("sellExchange_" + document.getElementById("exchangeCurrencySelector_" + p.id.slice(10, 13)).value).innerHTML / document.getElementById("buyExchange_" + p.id.slice(10, 13)).innerHTML).toFixed(2);
+                    }
+                }
+                
+                if ( Number(parseFloat(document.getElementById("sellAmount_" + p.id.slice(10, 13)).value).toFixed(2)) > Number(parseFloat(document.getElementById("units_" + p.id.slice(10, 13)).innerHTML.split(" ")[0]).toFixed(2)) ) {
+                    document.getElementById("sellAmount_" + p.id.slice(10, 13)).value = Number(parseFloat(document.getElementById("units_" + p.id.slice(10, 13)).innerHTML.split(" ")[0]).toFixed(2));
+
+                    if (document.getElementById("sell_buy_rate_or_price").innerHTML == "Rates") {
+                        document.getElementById("buyAmount_" + p.id.slice(10, 13)).value = parseFloat(document.getElementById("sellAmount_" + p.id.slice(10, 13)).value / document.getElementById("buyExchange_" + p.id.slice(10, 13)).innerHTML * document.getElementById("sellExchange_" + document.getElementById("exchangeCurrencySelector_" + p.id.slice(10, 13)).value).innerHTML).toFixed(2);
+                    } else {
+                        document.getElementById("buyAmount_" + p.id.slice(10, 13)).value = parseFloat(document.getElementById("sellAmount_" + p.id.slice(10, 13)).value * document.getElementById("buyExchange_" + p.id.slice(10, 13)).innerHTML / document.getElementById("sellExchange_" + document.getElementById("exchangeCurrencySelector_" + p.id.slice(10, 13)).value).innerHTML).toFixed(2);                    
+                    }
+                }
+                lastModified = "Buy";
+                document.getElementById(p.id).setAttribute("style", "background-color: #e0dcef;");
+                document.getElementById("sellAmount_" + p.id.slice(10, 13)).setAttribute("style", "background-color: white;");
+            }
+
+
+    
+            function buyCurrencyOnChange(p) {
+                if (lastModified == "Sell") {
+                    if (document.getElementById("sell_buy_rate_or_price").innerHTML == "Rates") {
+                        document.getElementById("buyAmount_" + p.id.slice(25, 28)).value = parseFloat(document.getElementById("sellAmount_" + p.id.slice(25, 28)).value / document.getElementById("buyExchange_" + p.id.slice(25, 28)).innerHTML * document.getElementById("sellExchange_" + document.getElementById("exchangeCurrencySelector_" + p.id.slice(25, 28)).value).innerHTML).toFixed(2);
+                    } else {
+                        document.getElementById("buyAmount_" + p.id.slice(25, 28)).value = parseFloat(document.getElementById("sellAmount_" + p.id.slice(25, 28)).value * document.getElementById("buyExchange_" + p.id.slice(25, 28)).innerHTML / document.getElementById("sellExchange_" + document.getElementById("exchangeCurrencySelector_" + p.id.slice(25, 28)).value).innerHTML).toFixed(2);
+                    }
+                } else {
+                    if (document.getElementById("sell_buy_rate_or_price").innerHTML == "Rates") {
+                        document.getElementById("sellAmount_" + p.id.slice(25, 28)).value = parseFloat(document.getElementById("buyAmount_" + p.id.slice(25, 28)).value / document.getElementById("sellExchange_" + document.getElementById("exchangeCurrencySelector_" + p.id.slice(25, 28)).value).innerHTML * document.getElementById("buyExchange_" + p.id.slice(25, 28)).innerHTML).toFixed(2);
+                    } else {
+                        document.getElementById("sellAmount_" + p.id.slice(25, 28)).value = parseFloat(document.getElementById("buyAmount_" + p.id.slice(25, 28)).value * document.getElementById("sellExchange_" + document.getElementById("exchangeCurrencySelector_" + p.id.slice(25, 28)).value).innerHTML / document.getElementById("buyExchange_" + p.id.slice(25, 28)).innerHTML).toFixed(2);
+                    }
+                    
+                    if ( Number(parseFloat(document.getElementById("sellAmount_" + p.id.slice(25, 28)).value).toFixed(2)) > Number(parseFloat(document.getElementById("units_" + p.id.slice(25, 28)).innerHTML.split(" ")[0]).toFixed(2)) ) {
+                        document.getElementById("sellAmount_" + p.id.slice(25, 28)).value = Number(parseFloat(document.getElementById("units_" + p.id.slice(25, 28)).innerHTML.split(" ")[0]).toFixed(2));
+                    
+                        if (document.getElementById("sell_buy_rate_or_price").innerHTML == "Rates") {
+                            document.getElementById("buyAmount_" + p.id.slice(25, 28)).value = parseFloat(document.getElementById("sellAmount_" + p.id.slice(25, 28)).value / document.getElementById("buyExchange_" + p.id.slice(25, 28)).innerHTML * document.getElementById("sellExchange_" + document.getElementById("exchangeCurrencySelector_" + p.id.slice(25, 28)).value).innerHTML).toFixed(2);
+                        } else {
+                            document.getElementById("buyAmount_" + p.id.slice(25, 28)).value = parseFloat(document.getElementById("sellAmount_" + p.id.slice(25, 28)).value * document.getElementById("buyExchange_" + p.id.slice(25, 28)).innerHTML / document.getElementById("sellExchange_" + document.getElementById("exchangeCurrencySelector_" + p.id.slice(25, 28)).value).innerHTML).toFixed(2);                    
+                        }
+                    }
+                }
+            }
+
+
+            function sellAmountOnClick(p) {
+                lastModified = "Sell";
+                document.getElementById(p.id).setAttribute("style", "background-color: #e0dcef;");
+                document.getElementById("buyAmount_" + p.id.slice(11, 14)).setAttribute("style", "background-color: white;");
+            }
+
+            function buyAmountOnClick(p) {
+                lastModified = "Buy";
+                document.getElementById(p.id).setAttribute("style", "background-color: #e0dcef;");
+                document.getElementById("sellAmount_" + p.id.slice(10, 13)).setAttribute("style", "background-color: white;");
+            }
+
+
+            function confirmBtnClicked(p) {
+                if (document.getElementById("sellAmount_" + p.id.slice(11, 14)).value >= 0.01 && document.getElementById("buyAmount_" + p.id.slice(11, 14)).value >= 0.01) {
+                    post('/trade', {rtsPrs: document.getElementById("sell_buy_rate_or_price").innerHTML, qUserName: document.getElementById("curUser").innerHTML, qCurCodeSell: p.id.slice(11, 14), qUnitsSell: document.getElementById("sellAmount_" + p.id.slice(11, 14)).value, qCurCodeBuy: document.getElementById("exchangeCurrencySelector_" + p.id.slice(11, 14)).value});    
+                } else {
+                    document.getElementById("sellAmount_" + p.id.slice(11, 14)).value = parseFloat(0).toFixed(2);
+                    document.getElementById("buyAmount_" + p.id.slice(11, 14)).value =  parseFloat(0).toFixed(2);
+                }
+            }
+
+
+            function cancelBtnClicked(p) {
+                document.getElementById("tradeRow_AUD").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");document.getElementById("tradeRow_BRL").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");
+                document.getElementById("tradeRow_CAD").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");document.getElementById("tradeRow_CHF").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");
+                document.getElementById("tradeRow_CNY").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");document.getElementById("tradeRow_EUR").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");
+                document.getElementById("tradeRow_GBP").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");document.getElementById("tradeRow_HKD").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");
+                document.getElementById("tradeRow_INR").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");document.getElementById("tradeRow_JPY").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");
+                document.getElementById("tradeRow_KRW").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");document.getElementById("tradeRow_MXN").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");
+                document.getElementById("tradeRow_NOK").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");document.getElementById("tradeRow_NZD").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");
+                document.getElementById("tradeRow_RUB").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");document.getElementById("tradeRow_SEK").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");
+                document.getElementById("tradeRow_SGD").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");document.getElementById("tradeRow_TRY").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");
+                document.getElementById("tradeRow_USD").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");document.getElementById("tradeRow_ZAR").setAttribute("style","display: none; background-color: #e6e6e6; text-align: center;");
+            }
+            
+
+            function accountClicked(p) {
+                var x = document.getElementById("base_curr").innerHTML;
+                var t = document.getElementById("total").innerHTML;
+
+                post('/account', {curCode: x, acctTotal: t});
+            }
+
+
+
+
+        </script>
+
+
+
+<% include partials/footerMenu.ejs %>
+
+
+
+    </body>
+</html>
+        
+
+
+		

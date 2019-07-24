@@ -1,0 +1,211 @@
+<% include partials/header.ejs %>
+
+        <div class="world-background">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="rate-box">
+                            <div class="container">
+                                <h1 class="world-msg col-lg-12">Foreign Exchange Rates</h1>
+                                <h5 class="world-msg-small col-lg-12">(Rates updated hourly)</h5>
+
+                                <div style="padding-bottom:1px;">
+                                    <div style="font-weight:bold; color:darkslateblue; font-size: 18px;">Base Currency</div>
+                                    <select class="custom-select" id="baseCurrencySelector" style = "width:250px;" onchange="baseCurrencyChanged()">
+                                        <option value="AUD">Australian Dollar - AUD</option>
+                                        <option value="BRL">Brazialian Real - BRL</option>
+                                        <option value="CAD">Canadian Dollar - CAD</option>
+                                        <option value="CHF">Swiss Franc - CHF</option>
+                                        <option value="CNY">Chinese Yuan - CNY</option>
+                                        <option value="EUR">Euro - EUR</option>
+                                        <option value="GBP">British Pound Sterling - GBP</option>
+                                        <option value="HKD">Hong Kong Dollar - HKD</option>
+                                        <option value="INR">Indian Rupee - INR</option>
+                                        <option value="JPY">Japanese Yen - JPY</option>
+                                        <option value="KRW">South Korean Won - KRW</option>
+                                        <option value="MXN">Mexican Peso - MXN</option>
+                                        <option value="NOK">Norwegian Krone - NOK</option>
+                                        <option value="NZD">New Zealand Dollar - NZD</option>
+                                        <option value="RUB">Russian Ruble - RUB</option>
+                                        <option value="SEK">Swedish Krona - SEK</option>
+                                        <option value="SGD">Singapore Dollar - SGD</option>
+                                        <option value="TRY">Turkish Lira - TRY</option>
+                                        <option value="USD">US Dollar - USD</option>
+                                        <option value="ZAR">South African Rand - ZAR</option>
+                                      </select>
+                                </div>
+
+
+
+                                <div class="row">
+                                    <div class="col-sm-12 col-md-6">
+                                    </div>
+                                    <div class="col-sm-12 col-md-6">
+                                        <div>
+                                            <p style="color:black; font-size:16px; font-weight: normal; text-align: center;"><% if(rates_or_prices == 'Rates') { %> One <%= currency_code %> = x.xxxx amount of foreign currency.<% } else { %> One foreign currency = x.xxxx amount of <%= currency_code %>.<% } %></p>
+                                        </div>
+                                        <div style="text-align: center;">
+                                            <p style="color:darkslateblue; display: inline-block; font-size:18px; font-weight: bold;">Show:&nbsp;</p>
+                                            <p id="rates_btn" style="color:darkslateblue; display: inline-block; font-size:18px; font-weight: bold; cursor: pointer; <% if(rates_or_prices == 'Rates') { %>border-bottom: 2px solid;<% } else { %>border-bottom: 0px solid;<% } %>" onclick="ratesChanged()">Rates</p>
+                                            <p style="color:darkslateblue; display: inline-block; font-size:18px; font-weight: bold;">&nbsp;/&nbsp;</p>
+                                            <p id="prices_btn" style="color:darkslateblue; display: inline-block; font-size:18px; font-weight: bold; cursor: pointer; <% if(rates_or_prices == 'Prices') { %>border-bottom: 2px solid;<% } else { %>border-bottom: 0px solid;<% } %>" onclick="pricesChanged()">Prices</p>
+                                        </div>
+                                        <div class="exchange-values">
+                                            <p class="exchange-spaces" style="display: inline-block; ">&nbsp;&nbsp;&nbsp;&nbsp;</p>
+                                            <p style="color:black; display: inline-block; font-size:14px; font-weight: bold;">We Buy at&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+                                            <p style="color:black; display: inline-block; font-size:14px; font-weight: bold;">We Sell at</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <% for(var i = 0; i < data.length; i++) { %>
+                                    
+                                        <div class="col-sm-12 col-md-6 exchange-names">
+                                            <div style="display: inline-block; width: 85px;">
+                                                <img src="/Flags/<%= data[i].code %>.png" alt="" height=18 style="margin-bottom:1px; margin-right:5px; box-shadow: 0px 1px 3px 1px rgba(0,0,0,0.15);"></img> <%= data[i].code %>
+                                            </div>
+                                            <div style="display: inline-block; ">
+                                                <%= data[i].name %>
+                                            </div>
+                                                
+                                        </div>
+
+                                        <div class="col-sm-12 col-md-6" style="border-bottom: 1px solid #dddddd; ">
+                                            <div class="exchange-values">
+                                                <div style="display: inline-block; width: 20px;">
+                                                    <% if(data[i].trend == -1) { %> <img src="/Flags/down_arrow.png" alt="" height=11></img> <% } else if(data[i].trend == 0) { %> <img src="/Flags/equal_sign.png" alt="" height=9></img> <% } else if(data[i].trend == 1) { %> <img src="/Flags/up_arrow.png" alt="" height=11></img> <% } %>
+                                                </div>
+                                                <div style="display: inline-block; width: 97px;">
+                                                    <%= data[i].buy %>
+                                                </div>
+                                                <div style="display: inline-block; width: 103px;">
+                                                    <%= data[i].sell %>
+                                                </div>
+                                                <div style="display: inline-block; width: 20px;">
+                                                    <span id="graph_<%= data[i].code %>" onclick="graphClicked(this)"><% if(data[i].graph == 1) { %> <img src="/Flags/graph_icon.png" alt="" height=11 style="cursor: pointer"></img> <% } %></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                            
+
+                                    <% } %>
+                                </div>
+
+                                <div style="display: none;" id="base_curr"><%= currency_code%></div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>    
+            </div>
+        </div>
+
+
+ 
+        <script>
+        
+
+            document.getElementById("baseCurrencySelector").value = document.getElementById("base_curr").innerHTML;
+        
+        
+            function post(path, params, method) {
+                method = method || "post"; // Set method to post by default if not specified.
+            
+                // The rest of this code assumes you are not using a library.
+                // It can be made less wordy if you use one.
+                var form = document.createElement("form");
+                form.setAttribute("method", method);
+                form.setAttribute("action", path);
+            
+                for(var key in params) {
+                    if(params.hasOwnProperty(key)) {
+                        var hiddenField = document.createElement("input");
+                        hiddenField.setAttribute("type", "hidden");
+                        hiddenField.setAttribute("name", key);
+                        hiddenField.setAttribute("value", params[key]);
+            
+                        form.appendChild(hiddenField);
+                    }
+                }
+            
+                document.body.appendChild(form);
+                form.submit();
+            }
+
+    
+
+
+            function baseCurrencyChanged() {
+                var x = document.getElementById("baseCurrencySelector").value;
+                var y;
+                if (document.getElementById("prices_btn").getAttribute("style") == "float:left; color:darkslateblue; font-size:18px; font-weight: bold; cursor: pointer; border-bottom: 2px solid;") {
+                    y = 'Prices';
+                } else {
+                    y = 'Rates';
+                };
+
+
+                post('/rates', {curCode: x, rtsPrs: y});
+            }
+
+
+
+            function ratesChanged() {
+                if (document.getElementById("rates_btn").getAttribute("style") != "color:darkslateblue; display: inline-block; font-size:18px; font-weight: bold; cursor: pointer; border-bottom: 2px solid;") {
+                    document.getElementById("prices_btn").setAttribute("style", "color:darkslateblue; display: inline-block; font-size:18px; font-weight: bold; cursor: pointer; border-bottom: 0px solid;");
+                    document.getElementById("rates_btn").setAttribute("style", "color:darkslateblue; display: inline-block; font-size:18px; font-weight: bold; cursor: pointer; border-bottom: 2px solid;");
+
+                    var x = document.getElementById("baseCurrencySelector").value;
+        
+                    post('/rates', {curCode: x, rtsPrs: "Rates"});
+                }
+            }
+        
+            function pricesChanged() {
+                    if (document.getElementById("prices_btn").getAttribute("style") != "color:darkslateblue; display: inline-block; font-size:18px; font-weight: bold; cursor: pointer; border-bottom: 2px solid;") {
+                    document.getElementById("rates_btn").setAttribute("style", "color:darkslateblue; display: inline-block; font-size:18px; font-weight: bold; cursor: pointer; border-bottom: 0px solid;");
+                    document.getElementById("prices_btn").setAttribute("style", "color:darkslateblue; display: inline-block; font-size:18px; font-weight: bold; cursor: pointer; border-bottom: 2px solid;");
+
+                    var x = document.getElementById("baseCurrencySelector").value;
+        
+                    post('/rates', {curCode: x, rtsPrs: "Prices"});
+                }
+            }
+
+        
+            function graphClicked(e) {
+                var x = document.getElementById("baseCurrencySelector").value;
+                var exc = e.id.slice(6,9);
+
+                var y;
+                if (document.getElementById("prices_btn").getAttribute("style") == "color:darkslateblue; display: inline-block; font-size:18px; font-weight: bold; cursor: pointer; border-bottom: 2px solid;") {
+                    y = 'Prices';
+                } else {
+                    y = 'Rates';
+                };
+            
+                post('/graphs', {curCode: x, excCode: exc, rtsPrs: y});
+            }
+
+
+        
+        </script>
+
+
+
+
+
+
+
+
+<% include partials/footerMenu.ejs %>
+
+
+
+    </body>
+</html>
+        
+
+
+		
