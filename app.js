@@ -1,3 +1,8 @@
+//Before Git Push Heroku Master
+//1. Remove encryption secret x 1
+//2. Remove mySQL database environemnt variables x 4
+//3. Change timing x 2 from 580 to 58 and 590 to 59
+
 var express         = require("express"),
     app             = express(),
     bodyParser      = require("body-parser"),
@@ -13,7 +18,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static(__dirname + "/public"));
 
 app.use(session({
-    secret: process.env.ENCRYPTION_SECRET,
+    secret: '' || process.env.ENCRYPTION_SECRET,
     resave: false,
     saveUninitialized: false
 }));
@@ -64,10 +69,10 @@ passport.use(new LocalStrategy(
 
 
 var connection = mysql.createConnection({
-    host     : process.env.DATABASE_HOST,
-    user     : process.env.DATABASE_USER,
-    password : process.env.DATABASE_PASSWORD,
-    database : process.env.DATABASE_NAME
+    host     : '' || process.env.DATABASE_HOST,
+    user     : '' || process.env.DATABASE_USER,
+    password : '' || process.env.DATABASE_PASSWORD,
+    database : '' || process.env.DATABASE_NAME
 });
 
 //To force MySQL to keep the connection alive
@@ -565,14 +570,11 @@ app.get("/monthlyStatement", isLoggedIn, function(req, res){
                     console.log(err);
                 } else {
                     var wdata = [];
-                    var ds = resultsAccountBalanceDaily[0][resultsAccountBalanceDaily[0].length - 1].date.split('-');
-                    var d = new Date(ds[0], ds[1] - 1, ds[2]);
-                    d.setDate(d.getDate() + 1);
-
+        
                     wdata.push(resultsAccountBalanceDaily[0]);
                     wdata.push(resultsMonthlyTrades[0]);
-                    wdata.push(d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2));
-                    
+        
+        
                     res.render("monthlyStatement.ejs", {currency_code: wcurrency_code, data: wdata, page: "monthlyStatement"});
                 }
             });
@@ -618,9 +620,6 @@ app.get("/quarterlyStatement", isLoggedIn, function(req, res){
         
                                                     var wdata = [];
                                                     var wcurs= [];
-                                                    var ds = resultsAccountBalanceDaily[0][resultsAccountBalanceDaily[0].length - 1].date.split('-');
-                                                    var d = new Date(ds[0], ds[1] - 1, ds[2]);
-                                                    d.setDate(d.getDate() + 1);
                                                     
                                                     wcurs.push(resultsMostTradedCurrencies[0]);
                                                     wcurs.push(resultsMostTradedCurrencies[1]);
@@ -633,7 +632,7 @@ app.get("/quarterlyStatement", isLoggedIn, function(req, res){
                                                     wdata.push(resultsAccountAllocEnd[0]);
                                                     wdata.push(wcurs);
                                                     wdata.push(resultsPastPerfStatementGraph[0]);
-                                                    wdata.push(d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2));
+                                        
                                         
                                                     res.render("quarterlyStatement.ejs", {currency_code: wcurrency_code, data: wdata, page: "quarterlyStatement"});
                                                 }
@@ -661,46 +660,9 @@ app.post("/quarterlyStatement", function(req, res){
 
 
 app.get("/yearlyStatement", isLoggedIn, function(req, res){
-    connection.query('CALL sp_account_balance_daily(' + "'" + req.user + "','" + wstmtDate + "'" + ',"EOYear")', function(err, resultsAccountBalanceDaily, fieldsAccountBalanceDaily) {
-        if (err) {
-            console.log(err);
-        } else {
-            connection.query('CALL sp_trade_history(' + "'" + req.user + "','" + wstmtDate + "'" + ',"EOYear","Asc")', function(err, resultsMonthlyTrades, fieldsMonthlyTrades) {
-                if (err) {
-                    console.log(err);
-                } else {
-                    connection.query('CALL sp_account_balance_monthly(' + "'" + req.user + "','" + wstmtDate + "'" + ',"EOYear")', function(err, resultsAccountBalanceMonthly, fieldsAccountBalanceMonthly) {
-                        if (err) {
-                            console.log(err);
-                        } else {
-                            connection.query('CALL sp_trades_per_month(' + "'" + req.user + "','" + wstmtDate + "'" + ',"EOYear")', function(err, resultsTradesPerMonth, fieldsTradesPerMonth) {
-                                if (err) {
-                                    console.log(err);
-                                } else {
-
-                                    var wdata = [];
-
-                                    var ds = resultsAccountBalanceDaily[0][resultsAccountBalanceDaily[0].length - 1].date.split('-');
-                                    var d = new Date(ds[0], ds[1] - 1, ds[2]);
-                                    d.setDate(d.getDate() + 1);
-
-                                    wdata.push(resultsAccountBalanceDaily[0]);
-                                    wdata.push(resultsMonthlyTrades[0]);
-                                    wdata.push(resultsAccountBalanceMonthly[0]);
-                                    wdata.push(resultsTradesPerMonth[0]);
-                                    wdata.push(d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2));
-                        
-                                    res.render("yearlyStatement.ejs", {currency_code: wcurrency_code, data: wdata, page: "yearlyStatement"});
-                                }
-                            });
-                        }
-                    });
-                }
-            });
-        }
-    });
+    var wdata = wstmtDate; //This is just for testing here!!!
+    res.render("yearlyStatement.ejs", {data: wdata, page: "yearlyStatement"});
 });
-
 
 app.post("/yearlyStatement", function(req, res){
     if(req.body.stmtDate){
@@ -736,8 +698,8 @@ app.post("/login", passport.authenticate("local",
 app.post("/register", function(req, res){
     if (req.body.password != req.body.confirmPassword) {
         return res.render("landing.ejs", {message: "The Passwords must match!"});
-    } else if (/\W/.test(req.body.username) || req.body.username.indexOf(' ') >= 0 || req.body.password.indexOf(' ') >= 0){
-        return res.render("landing.ejs", {message: "Invalid character inside Username or Password!"});
+    } else if (req.body.username.indexOf(' ') >= 0 || req.body.password.indexOf(' ') >= 0){
+        return res.render("landing.ejs", {message: "Username and Password can not contain spaces!"});
     } else if (req.body.baseCurrency == 'Choose...'){
         return res.render("landing.ejs", {message: "Please select a home currency!"});
     } else {
@@ -815,79 +777,101 @@ setInterval(function() {
     var d = new Date();
     
     //Pull Daily rates
-    if (d.getHours() == 0 && d.getMinutes() == 58 ) { 
-        
+    if (d.getHours() == 0 && d.getMinutes() == 45 ) { 
+
         var dy = new Date();
-        var dl = new Date(dy.getFullYear() + '-' + ('0' + (dy.getMonth() + 1)).slice(-2) + '-' + ('0' + dy.getDate()).slice(-2));
-        dl.setDate(dl.getDate() - 1);
-        var linkdy = "http://data.fixer.io/api/" + dl.getFullYear() + '-' + ('0' + (dl.getMonth() + 1)).slice(-2) + '-' + ('0' + dl.getDate()).slice(-2) + "?access_key=" + process.env.FIXER_API_KEY + "&base=EUR&symbols=AUD,BRL,CAD,CHF,CNY,EUR,GBP,HKD,INR,JPY,KRW,MXN,NOK,NZD,RUB,SEK,SGD,TRY,USD,ZAR";
-        
+        var linkdy = "http://data.fixer.io/api/" + dy.getFullYear() + '-' + ('0' + (dy.getMonth() + 1)).slice(-2) + '-' + ('0' + dy.getDate()).slice(-2) + "?access_key=" + process.env.FIXER_API_KEY + "&base=EUR&symbols=AUD,BRL,CAD,CHF,CNY,EUR,GBP,HKD,INR,JPY,KRW,MXN,NOK,NZD,RUB,SEK,SGD,TRY,USD,ZAR";
+
         axios.get(linkdy)
             .then(function(exchange_rates){
                 if(exchange_rates.data.date) {
-                    var params = "";
-                    var n = 20;
-                    for (var rate in exchange_rates.data.rates) {
-                        params += "'" + rate + "', " + exchange_rates.data.rates[rate] + ", ";
-                        n--;
-                    }
-                    for (var j = 0; j < n; j++) {
-                        params += "'" + "" + "', " + 0 + ", ";
-                    }
-                    params += "'" + exchange_rates.data.date + "'";
-                    connection.query('CALL sp_insert_exchange_rates_daily(' + params + ')', function (error, results, fields) {
-                        if (error) throw error;
+				    connection.query('CALL sp_insert_exchange_rates_daily(' + '1'  + ',' + exchange_rates.data.rates.AUD + ',' +
+																			  '2'  + ',' + exchange_rates.data.rates.BRL + ',' +
+																			  '3'  + ',' + exchange_rates.data.rates.CAD + ',' +
+																			  '4'  + ',' + exchange_rates.data.rates.CHF + ',' +
+																			  '5'  + ',' + exchange_rates.data.rates.CNY + ',' +
+																			  '6'  + ',' + exchange_rates.data.rates.EUR + ',' +
+																			  '7'  + ',' + exchange_rates.data.rates.GBP + ',' +
+																			  '8'  + ',' + exchange_rates.data.rates.HKD + ',' +
+																			  '9'  + ',' + exchange_rates.data.rates.INR + ',' +
+																			  '10' + ',' + exchange_rates.data.rates.JPY + ',' +
+																			  '11' + ',' + exchange_rates.data.rates.KRW + ',' +
+																			  '12' + ',' + exchange_rates.data.rates.MXN + ',' +
+																			  '13' + ',' + exchange_rates.data.rates.NOK + ',' +
+																			  '14' + ',' + exchange_rates.data.rates.NZD + ',' +
+																			  '15' + ',' + exchange_rates.data.rates.RUB + ',' +
+																			  '16' + ',' + exchange_rates.data.rates.SEK + ',' +
+																			  '17' + ',' + exchange_rates.data.rates.SGD + ',' +
+																			  '18' + ',' + exchange_rates.data.rates.TRY + ',' +
+																			  '19' + ',' + exchange_rates.data.rates.USD + ',' +
+																			  '20' + ',' + exchange_rates.data.rates.ZAR + ',' +
+																			dy.getFullYear() + ',' + dy.getMonth() + ',' + dy.getDate() +
+																		')', 
+						function (error, results, fields) {
+							if (error) throw error;
                     });
+
                 }
             });
     }
 
 
     //Pull Hourly rates
-    if (d.getMinutes() == 59 ) { 
-        
-        var linkhr = "http://data.fixer.io/api/latest?access_key=" + process.env.FIXER_API_KEY + "&base=EUR&symbols=AUD,BRL,CAD,CHF,CNY,EUR,GBP,HKD,INR,JPY,KRW,MXN,NOK,NZD,RUB,SEK,SGD,TRY,USD,ZAR";
-        
-        axios.get(linkhr)
-            .then(function(exchange_rates){
-                if(exchange_rates.data.date) {
-                    var dateu = new Date(exchange_rates.data.timestamp * 1000);
-                    var hours = ('0' + dateu.getHours()).slice(-2);
-                    
-                    var params = "";
-                    var n = 20;
-                    for (var rate in exchange_rates.data.rates) {
-                        params += "'" + rate + "', " + exchange_rates.data.rates[rate] + ", ";
-                        n--;
-                    }
-                    for (var j = 0; j < n; j++) {
-                        params += "'" + "" + "', " + 0 + ", ";
-                    }
-                    params += "'" + exchange_rates.data.date + " " + hours + ":00:00" + "'";
-                    connection.query('CALL sp_insert_exchange_rates_hourly(' + params + ')', function (error, results, fields) {
-                        if (error) throw error;
-                    });
+    if (d.getMinutes() == 50 ) { 
+	
+		var d2 = new Date();
 
-                }
-            });
+		connection.query('CALL sp_insert_exchange_rates_hourly2(' + d2.getFullYear() + ',' + d2.getMonth() + ',' + d2.getDate() + ',' + d2.getHours() + ')', 
+				function (error, results, fields) {
+					if (error) throw error;
+        });
+
+
+	
     }
 
-
+    //Fill any missing values
+    if (d.getMinutes() == 55 ) { 
+	
+		connection.query('CALL sp_insert_exchange_rates_hourly_insert_missing_readings()', 
+				function (error, results, fields) {
+					if (error) throw error;
+        });
+	
+    }
 
 }, 60000); // every 1 minute = 60000
 
 
+//Logging
+setInterval(function() {
+	//var dy = new Date(Date.now());
+	//var dy = new Date();
+    //connection.query('INSERT INTO log VALUES(' + "'" + dy.getHours().toString() + "'" + ')');
+	//connection.query('INSERT INTO log VALUES(' + "'" + dy.getMinutes().toString() + "'" + ')');
+	//connection.query('INSERT INTO log VALUES(' + "'" + dy.getMinutes().toString() + "'" + ')');
+    //var dl = new Date(dy.getFullYear() + '-' + ('0' + (dy.getMonth() + 1)).slice(-2) + '-' + ('0' + dy.getDate()).slice(-2));
+	//connection.query('INSERT INTO log VALUES(' + "'" + dl.getDate().toString() + "'" + ')');
+	//dl.setDate(dl.getDate() - 1);
+	//connection.query('INSERT INTO log VALUES(' + "'" + dl.getDate().toString() + "'" + ')');
+	//var linkdy = "http://data.fixer.io/api/" + dl.getFullYear() + '-' + ('0' + (dl.getMonth() + 1)).slice(-2) + '-' + ('0' + dl.getDate()).slice(-2) + "access_key";
+    //connection.query('INSERT INTO log VALUES(3)');
+	//connection.query('INSERT INTO log VALUES(' + "'" + d.getMinutes().toString() + "'" + ')');
+	//connection.query('INSERT INTO log VALUES(' + "'" + linkdy + "'" + ')');
+	
+
+}, 10000); // every 10 seconds
 
 
 
 //Keep the app awake on Heroku
 setInterval(function() {
-    http.get(process.env.APP_URL);
+    http.get("http://currencytide.com/");
 }, 300000); // every 5 minutes (300000)
 
 
 
 app.listen(process.env.PORT, process.env.IP, function(){
-  console.log("CurrencyPocket Has Started!");
+  console.log("The CurrencyTide Has Started!");
 });
 
