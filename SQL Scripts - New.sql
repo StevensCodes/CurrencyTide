@@ -1,4 +1,5 @@
 #########################
+#########################
 # Create Table Statements
 #########################
 
@@ -341,7 +342,7 @@ BEGIN
 							LEFT( CAST(1 / e1.exchange_rate * e2.exchange_rate AS DECIMAL(14, 10)), IF(ABS(FLOOR(LOG10(1 / e1.exchange_rate * e2.exchange_rate)) -7) > 7, ABS(FLOOR(LOG10(1 / e1.exchange_rate * e2.exchange_rate)) -7), 7)) AS rate_mid,
 							LEFT( CAST(1 / (1 / e1.exchange_rate * e2.exchange_rate) AS DECIMAL(14, 10)), IF(ABS(FLOOR(LOG10(1 / (1 / e1.exchange_rate * e2.exchange_rate))) -7) > 7, ABS(FLOOR(LOG10(1 / (1 / e1.exchange_rate * e2.exchange_rate))) -7), 7)) AS price_mid, 
 							e1.date_hour
-					FROM hourly_exchange_rate e1 CROSS JOIN hourly_exchange_rate e2 INNER JOIN Currency c1 ON e1.currency_id = c1.id INNER JOIN Currency c2 ON e2.currency_id = c2.id
+					FROM hourly_exchange_rate e1 CROSS JOIN hourly_exchange_rate e2 INNER JOIN currency c1 ON e1.currency_id = c1.id INNER JOIN currency c2 ON e2.currency_id = c2.id
 					WHERE e1.date_hour = e2.date_hour AND c1.code = p_base_code AND c2.code = p_pair_code
 				 ) r
 			GROUP BY base, exchange, LEFT(date_hour, 10)
@@ -351,7 +352,7 @@ BEGIN
 											LEFT( CAST(1 / e1.exchange_rate * e2.exchange_rate AS DECIMAL(14, 10)), IF(ABS(FLOOR(LOG10(1 / e1.exchange_rate * e2.exchange_rate)) -7) > 7, ABS(FLOOR(LOG10(1 / e1.exchange_rate * e2.exchange_rate)) -7), 7)) AS rate_mid,
 											LEFT( CAST(1 / (1 / e1.exchange_rate * e2.exchange_rate) AS DECIMAL(14, 10)), IF(ABS(FLOOR(LOG10(1 / (1 / e1.exchange_rate * e2.exchange_rate))) -7) > 7, ABS(FLOOR(LOG10(1 / (1 / e1.exchange_rate * e2.exchange_rate))) -7), 7)) AS price_mid, 
 											e1.date_hour
-									FROM hourly_exchange_rate e1 CROSS JOIN hourly_exchange_rate e2 INNER JOIN Currency c1 ON e1.currency_id = c1.id INNER JOIN Currency c2 ON e2.currency_id = c2.id
+									FROM hourly_exchange_rate e1 CROSS JOIN hourly_exchange_rate e2 INNER JOIN currency c1 ON e1.currency_id = c1.id INNER JOIN currency c2 ON e2.currency_id = c2.id
 									WHERE e1.date_hour = e2.date_hour AND c1.code = p_base_code AND c2.code = p_pair_code
 								 ) r
 							WHERE RIGHT(date_hour, 8) = '00:00:00'
@@ -361,7 +362,7 @@ BEGIN
 											LEFT( CAST(1 / e1.exchange_rate * e2.exchange_rate AS DECIMAL(14, 10)), IF(ABS(FLOOR(LOG10(1 / e1.exchange_rate * e2.exchange_rate)) -7) > 7, ABS(FLOOR(LOG10(1 / e1.exchange_rate * e2.exchange_rate)) -7), 7)) AS rate_mid,
 											LEFT( CAST(1 / (1 / e1.exchange_rate * e2.exchange_rate) AS DECIMAL(14, 10)), IF(ABS(FLOOR(LOG10(1 / (1 / e1.exchange_rate * e2.exchange_rate))) -7) > 7, ABS(FLOOR(LOG10(1 / (1 / e1.exchange_rate * e2.exchange_rate))) -7), 7)) AS price_mid, 
 											e1.date_hour
-									FROM hourly_exchange_rate e1 CROSS JOIN hourly_exchange_rate e2 INNER JOIN Currency c1 ON e1.currency_id = c1.id INNER JOIN Currency c2 ON e2.currency_id = c2.id
+									FROM hourly_exchange_rate e1 CROSS JOIN hourly_exchange_rate e2 INNER JOIN currency c1 ON e1.currency_id = c1.id INNER JOIN currency c2 ON e2.currency_id = c2.id
 									WHERE e1.date_hour = e2.date_hour AND c1.code = p_base_code AND c2.code = p_pair_code
 								 ) r
 							WHERE RIGHT(date_hour, 8) = '00:00:00'
@@ -418,7 +419,7 @@ BEGIN
 			CASE WHEN p_rates_or_prices = 'Rates' THEN LEFT( CAST(1 / e1.exchange_rate * e2.exchange_rate AS DECIMAL(14, 10)), IF(ABS(FLOOR(LOG10(1 / e1.exchange_rate * e2.exchange_rate)) -7) > 7, ABS(FLOOR(LOG10(1 / e1.exchange_rate * e2.exchange_rate)) -7), 7))
 				 WHEN p_rates_or_prices = 'Prices' THEN LEFT( CAST(1 / (1 / e1.exchange_rate * e2.exchange_rate) AS DECIMAL(14, 10)), IF(ABS(FLOOR(LOG10(1 / (1 / e1.exchange_rate * e2.exchange_rate))) -7) > 7, ABS(FLOOR(LOG10(1 / (1 / e1.exchange_rate * e2.exchange_rate))) -7), 7)) END mid,
 			e1.date
-	FROM daily_exchange_rate e1 CROSS JOIN daily_exchange_rate e2 INNER JOIN Currency c1 ON e1.currency_id = c1.id INNER JOIN Currency c2 ON e2.currency_id = c2.id
+	FROM daily_exchange_rate e1 CROSS JOIN daily_exchange_rate e2 INNER JOIN currency c1 ON e1.currency_id = c1.id INNER JOIN currency c2 ON e2.currency_id = c2.id
 	WHERE e1.date = e2.date AND c1.code = p_base_code AND c2.code = p_pair_code
     ORDER BY e1.date;
 
@@ -434,7 +435,7 @@ BEGIN
 			CASE WHEN p_rates_or_prices = 'Rates' THEN LEFT( CAST(1 / e1.exchange_rate * e2.exchange_rate AS DECIMAL(14, 10)), IF(ABS(FLOOR(LOG10(1 / e1.exchange_rate * e2.exchange_rate)) -7) > 7, ABS(FLOOR(LOG10(1 / e1.exchange_rate * e2.exchange_rate)) -7), 7))
 				 WHEN p_rates_or_prices = 'Prices' THEN LEFT( CAST(1 / (1 / e1.exchange_rate * e2.exchange_rate) AS DECIMAL(14, 10)), IF(ABS(FLOOR(LOG10(1 / (1 / e1.exchange_rate * e2.exchange_rate))) -7) > 7, ABS(FLOOR(LOG10(1 / (1 / e1.exchange_rate * e2.exchange_rate))) -7), 7)) END AS mid,
 			e1.date_hour
-	FROM hourly_exchange_rate e1 CROSS JOIN hourly_exchange_rate e2 INNER JOIN Currency c1 ON e1.currency_id = c1.id INNER JOIN Currency c2 ON e2.currency_id = c2.id
+	FROM hourly_exchange_rate e1 CROSS JOIN hourly_exchange_rate e2 INNER JOIN currency c1 ON e1.currency_id = c1.id INNER JOIN currency c2 ON e2.currency_id = c2.id
 	WHERE e1.date_hour = e2.date_hour AND c1.code = p_base_code AND c2.code = p_pair_code
     ORDER BY e1.date_hour;
 
@@ -449,7 +450,7 @@ BEGIN
 			LEFT( CAST(1 / e1.exchange_rate * e2.exchange_rate AS DECIMAL(14, 10)), IF(ABS(FLOOR(LOG10(1 / e1.exchange_rate * e2.exchange_rate)) -7) > 7, ABS(FLOOR(LOG10(1 / e1.exchange_rate * e2.exchange_rate)) -7), 7)) AS rate_mid,
 			LEFT( CAST(1 / (1 / e1.exchange_rate * e2.exchange_rate) AS DECIMAL(14, 10)), IF(ABS(FLOOR(LOG10(1 / (1 / e1.exchange_rate * e2.exchange_rate))) -7) > 7, ABS(FLOOR(LOG10(1 / (1 / e1.exchange_rate * e2.exchange_rate))) -7), 7)) AS price_mid, 
 			e1.date
-	FROM daily_exchange_rate e1 CROSS JOIN daily_exchange_rate e2 INNER JOIN Currency c1 ON e1.currency_id = c1.id INNER JOIN Currency c2 ON e2.currency_id = c2.id
+	FROM daily_exchange_rate e1 CROSS JOIN daily_exchange_rate e2 INNER JOIN currency c1 ON e1.currency_id = c1.id INNER JOIN currency c2 ON e2.currency_id = c2.id
 	WHERE e1.currency_id <> e2.currency_id AND e1.date = e2.date AND c1.code = p_base_code
     ORDER BY e1.date;
 
@@ -464,7 +465,7 @@ BEGIN
 			LEFT( CAST(1 / e1.exchange_rate * e2.exchange_rate AS DECIMAL(14, 10)), IF(ABS(FLOOR(LOG10(1 / e1.exchange_rate * e2.exchange_rate)) -7) > 7, ABS(FLOOR(LOG10(1 / e1.exchange_rate * e2.exchange_rate)) -7), 7)) AS rate_mid,
 			LEFT( CAST(1 / (1 / e1.exchange_rate * e2.exchange_rate) AS DECIMAL(14, 10)), IF(ABS(FLOOR(LOG10(1 / (1 / e1.exchange_rate * e2.exchange_rate))) -7) > 7, ABS(FLOOR(LOG10(1 / (1 / e1.exchange_rate * e2.exchange_rate))) -7), 7)) AS price_mid, 
 			e1.date_hour
-	FROM hourly_exchange_rate e1 CROSS JOIN hourly_exchange_rate e2 INNER JOIN Currency c1 ON e1.currency_id = c1.id INNER JOIN Currency c2 ON e2.currency_id = c2.id
+	FROM hourly_exchange_rate e1 CROSS JOIN hourly_exchange_rate e2 INNER JOIN currency c1 ON e1.currency_id = c1.id INNER JOIN currency c2 ON e2.currency_id = c2.id
 	WHERE e1.currency_id <> e2.currency_id AND e1.date_hour = e2.date_hour AND c1.code = p_base_code
     ORDER BY e1.date_hour;
 
@@ -498,35 +499,49 @@ END $$
 
 
 CREATE PROCEDURE `sp_insert_exchange_rates_daily`(
-	p_cur01 CHAR(3), p_rate01 DECIMAL(12,6), p_cur02 CHAR(3), p_rate02 DECIMAL(12,6),
-    p_cur03 CHAR(3), p_rate03 DECIMAL(12,6), p_cur04 CHAR(3), p_rate04 DECIMAL(12,6), 
-    p_cur05 CHAR(3), p_rate05 DECIMAL(12,6), p_cur06 CHAR(3), p_rate06 DECIMAL(12,6), 
-    p_cur07 CHAR(3), p_rate07 DECIMAL(12,6), p_cur08 CHAR(3), p_rate08 DECIMAL(12,6), 
-    p_cur09 CHAR(3), p_rate09 DECIMAL(12,6), p_cur10 CHAR(3), p_rate10 DECIMAL(12,6), 
-    p_cur11 CHAR(3), p_rate11 DECIMAL(12,6), p_cur12 CHAR(3), p_rate12 DECIMAL(12,6), 
-    p_cur13 CHAR(3), p_rate13 DECIMAL(12,6), p_cur14 CHAR(3), p_rate14 DECIMAL(12,6), 
-    p_cur15 CHAR(3), p_rate15 DECIMAL(12,6), p_cur16 CHAR(3), p_rate16 DECIMAL(12,6), 
-    p_cur17 CHAR(3), p_rate17 DECIMAL(12,6), p_cur18 CHAR(3), p_rate18 DECIMAL(12,6), 
-    p_cur19 CHAR(3), p_rate19 DECIMAL(12,6), p_cur20 CHAR(3), p_rate20 DECIMAL(12,6), p_date DATE
+	p_cur01 INT, p_rate01 DECIMAL(12,6), p_cur02 INT, p_rate02 DECIMAL(12,6),
+    p_cur03 INT, p_rate03 DECIMAL(12,6), p_cur04 INT, p_rate04 DECIMAL(12,6), 
+    p_cur05 INT, p_rate05 DECIMAL(12,6), p_cur06 INT, p_rate06 DECIMAL(12,6), 
+    p_cur07 INT, p_rate07 DECIMAL(12,6), p_cur08 INT, p_rate08 DECIMAL(12,6), 
+    p_cur09 INT, p_rate09 DECIMAL(12,6), p_cur10 INT, p_rate10 DECIMAL(12,6), 
+    p_cur11 INT, p_rate11 DECIMAL(12,6), p_cur12 INT, p_rate12 DECIMAL(12,6), 
+    p_cur13 INT, p_rate13 DECIMAL(12,6), p_cur14 INT, p_rate14 DECIMAL(12,6), 
+    p_cur15 INT, p_rate15 DECIMAL(12,6), p_cur16 INT, p_rate16 DECIMAL(12,6), 
+    p_cur17 INT, p_rate17 DECIMAL(12,6), p_cur18 INT, p_rate18 DECIMAL(12,6), 
+    p_cur19 INT, p_rate19 DECIMAL(12,6), p_cur20 INT, p_rate20 DECIMAL(12,6), yr INT, mo INT, dy INT
 )
 BEGIN
 
 	#Inserting rows based on currency_id if no rows exist for that day already, so exchange rates can not be changed later for consitency
     #and no future or not yet closed days are allowed
 	INSERT INTO daily_exchange_rate 
-		SELECT c.id, p.exchange_rate, p_date
-		FROM currency c INNER JOIN (SELECT p_cur01 AS currency_code, p_rate01 AS exchange_rate UNION SELECT p_cur02, p_rate02
-									UNION SELECT p_cur03, p_rate03 UNION SELECT p_cur04, p_rate04 UNION SELECT p_cur05, p_rate05
-									UNION SELECT p_cur06, p_rate06 UNION SELECT p_cur07, p_rate07 UNION SELECT p_cur08, p_rate08
-									UNION SELECT p_cur09, p_rate09 UNION SELECT p_cur10, p_rate10 UNION SELECT p_cur11, p_rate11
-									UNION SELECT p_cur12, p_rate12 UNION SELECT p_cur13, p_rate13 UNION SELECT p_cur14, p_rate14
-									UNION SELECT p_cur15, p_rate15 UNION SELECT p_cur16, p_rate16 UNION SELECT p_cur17, p_rate17
-									UNION SELECT p_cur18, p_rate18 UNION SELECT p_cur19, p_rate19 UNION SELECT p_cur20, p_rate20) p 
-			ON c.code = p.currency_code
-		WHERE NOT EXISTS ( SELECT * 
+		SELECT *
+        FROM ( SELECT p_cur01, p_rate01, CONCAT(yr, '-', RIGHT(CONCAT('0', mo + 1), 2), '-', RIGHT(CONCAT('0', dy), 2)) UNION ALL
+			   SELECT p_cur02, p_rate02, CONCAT(yr, '-', RIGHT(CONCAT('0', mo + 1), 2), '-', RIGHT(CONCAT('0', dy), 2)) UNION ALL
+               SELECT p_cur03, p_rate03, CONCAT(yr, '-', RIGHT(CONCAT('0', mo + 1), 2), '-', RIGHT(CONCAT('0', dy), 2)) UNION ALL
+               SELECT p_cur04, p_rate04, CONCAT(yr, '-', RIGHT(CONCAT('0', mo + 1), 2), '-', RIGHT(CONCAT('0', dy), 2)) UNION ALL
+               SELECT p_cur05, p_rate05, CONCAT(yr, '-', RIGHT(CONCAT('0', mo + 1), 2), '-', RIGHT(CONCAT('0', dy), 2)) UNION ALL
+               SELECT p_cur06, p_rate06, CONCAT(yr, '-', RIGHT(CONCAT('0', mo + 1), 2), '-', RIGHT(CONCAT('0', dy), 2)) UNION ALL
+               SELECT p_cur07, p_rate07, CONCAT(yr, '-', RIGHT(CONCAT('0', mo + 1), 2), '-', RIGHT(CONCAT('0', dy), 2)) UNION ALL
+               SELECT p_cur08, p_rate08, CONCAT(yr, '-', RIGHT(CONCAT('0', mo + 1), 2), '-', RIGHT(CONCAT('0', dy), 2)) UNION ALL
+               SELECT p_cur09, p_rate09, CONCAT(yr, '-', RIGHT(CONCAT('0', mo + 1), 2), '-', RIGHT(CONCAT('0', dy), 2)) UNION ALL
+               SELECT p_cur10, p_rate10, CONCAT(yr, '-', RIGHT(CONCAT('0', mo + 1), 2), '-', RIGHT(CONCAT('0', dy), 2)) UNION ALL
+               SELECT p_cur11, p_rate11, CONCAT(yr, '-', RIGHT(CONCAT('0', mo + 1), 2), '-', RIGHT(CONCAT('0', dy), 2)) UNION ALL
+               SELECT p_cur12, p_rate12, CONCAT(yr, '-', RIGHT(CONCAT('0', mo + 1), 2), '-', RIGHT(CONCAT('0', dy), 2)) UNION ALL
+               SELECT p_cur13, p_rate13, CONCAT(yr, '-', RIGHT(CONCAT('0', mo + 1), 2), '-', RIGHT(CONCAT('0', dy), 2)) UNION ALL
+               SELECT p_cur14, p_rate14, CONCAT(yr, '-', RIGHT(CONCAT('0', mo + 1), 2), '-', RIGHT(CONCAT('0', dy), 2)) UNION ALL
+               SELECT p_cur15, p_rate15, CONCAT(yr, '-', RIGHT(CONCAT('0', mo + 1), 2), '-', RIGHT(CONCAT('0', dy), 2)) UNION ALL
+               SELECT p_cur16, p_rate16, CONCAT(yr, '-', RIGHT(CONCAT('0', mo + 1), 2), '-', RIGHT(CONCAT('0', dy), 2)) UNION ALL
+               SELECT p_cur17, p_rate17, CONCAT(yr, '-', RIGHT(CONCAT('0', mo + 1), 2), '-', RIGHT(CONCAT('0', dy), 2)) UNION ALL
+               SELECT p_cur18, p_rate18, CONCAT(yr, '-', RIGHT(CONCAT('0', mo + 1), 2), '-', RIGHT(CONCAT('0', dy), 2)) UNION ALL
+               SELECT p_cur19, p_rate19, CONCAT(yr, '-', RIGHT(CONCAT('0', mo + 1), 2), '-', RIGHT(CONCAT('0', dy), 2)) UNION ALL
+               SELECT p_cur20, p_rate20, CONCAT(yr, '-', RIGHT(CONCAT('0', mo + 1), 2), '-', RIGHT(CONCAT('0', dy), 2))               
+             ) c
+        WHERE NOT EXISTS ( SELECT * 
 						   FROM daily_exchange_rate
-						   WHERE date = p_date )
-				AND p_date < CURDATE();
+						   WHERE date = CONCAT(yr, '-', RIGHT(CONCAT('0', mo + 1), 2), '-', RIGHT(CONCAT('0', dy), 2)) 
+						 );
+				#AND p_date < CURDATE();
 
 
 	#Inserting the same reading as prior day, if reading is missing for one or more currencies from the API response
@@ -535,8 +550,8 @@ BEGIN
 		FROM daily_exchange_rate e1 LEFT OUTER JOIN daily_exchange_rate e2
 			ON DATE_ADD(e1.date, INTERVAL +1 DAY) = e2.date
 				AND e1.currency_id = e2.currency_id
-		WHERE e1.date = DATE_ADD(p_date, INTERVAL -1 DAY) 
-				AND p_date < CURDATE()
+		WHERE e1.date = DATE_ADD(CONCAT(yr, '-', RIGHT(CONCAT('0', mo + 1), 2), '-', RIGHT(CONCAT('0', dy), 2)) , INTERVAL -1 DAY) 
+				#AND p_date < CURDATE()
 				AND e2.date IS NULL;
 
 
@@ -547,7 +562,8 @@ BEGIN
     
     OPTIMIZE NO_WRITE_TO_BINLOG
     TABLE currency, daily_exchange_rate, hourly_exchange_rate, ledger, user;
-    
+
+   
 END $$
 
 
@@ -600,6 +616,142 @@ BEGIN
 	WHERE date_hour < DATE_ADD(CURDATE(), INTERVAL -30 DAY);
     
 END $$
+
+
+
+CREATE PROCEDURE `sp_insert_exchange_rates_hourly2`(yr INT, mo INT, dy INT, hr INT)
+BEGIN
+    INSERT INTO hourly_exchange_rate 
+		SELECT DISTINCT currency_id, exchange_rate, CONCAT(yr, '-', RIGHT(CONCAT('0', mo + 1), 2), '-', RIGHT(CONCAT('0', dy), 2), ' ', RIGHT(CONCAT('0', hr), 2), ':00:00')
+        FROM daily_exchange_rate
+		WHERE date = CONCAT(yr, '-', RIGHT(CONCAT('0', mo + 1), 2), '-', RIGHT(CONCAT('0', dy), 2));
+
+END $$
+
+
+CREATE PROCEDURE `sp_insert_exchange_rates_hourly_insert_missing_readings`()
+BEGIN
+
+    #Current day
+	INSERT INTO hourly_exchange_rate
+		SELECT b.currency_id, b.exchange_Rate, b.date_hour
+		FROM (
+				SELECT *
+				FROM (                       
+						SELECT CONCAT(dt.dt, ' ', hr.hr) AS date_hour
+						FROM (	SELECT MAX(LEFT(date_hour, 10)) AS dt
+								FROM hourly_exchange_rate
+							 ) dt CROSS JOIN
+							 (
+								SELECT '00:00:00' AS hr UNION ALL
+								SELECT '01:00:00' AS hr UNION ALL
+								SELECT '02:00:00' AS hr UNION ALL
+								SELECT '03:00:00' AS hr UNION ALL
+								SELECT '04:00:00' AS hr UNION ALL
+								SELECT '05:00:00' AS hr UNION ALL
+								SELECT '06:00:00' AS hr UNION ALL
+								SELECT '07:00:00' AS hr UNION ALL
+								SELECT '08:00:00' AS hr UNION ALL
+								SELECT '09:00:00' AS hr UNION ALL
+								SELECT '10:00:00' AS hr UNION ALL
+								SELECT '11:00:00' AS hr UNION ALL
+								SELECT '12:00:00' AS hr UNION ALL
+								SELECT '13:00:00' AS hr UNION ALL
+								SELECT '14:00:00' AS hr UNION ALL
+								SELECT '15:00:00' AS hr UNION ALL
+								SELECT '16:00:00' AS hr UNION ALL
+								SELECT '17:00:00' AS hr UNION ALL
+								SELECT '18:00:00' AS hr UNION ALL
+								SELECT '19:00:00' AS hr UNION ALL
+								SELECT '20:00:00' AS hr UNION ALL
+								SELECT '21:00:00' AS hr UNION ALL
+								SELECT '22:00:00' AS hr UNION ALL
+								SELECT '23:00:00' AS hr
+							 ) hr
+						WHERE CONCAT(dt.dt, ' ', hr.hr) <= (SELECT MAX(date_hour) AS max_date_hour
+															FROM hourly_exchange_rate
+														   )
+					 ) a CROSS JOIN
+					 (
+						SELECT DISTINCT currency_id, exchange_rate
+						FROM hourly_exchange_rate
+						WHERE date_hour = ( SELECT MAX(date_hour)
+											FROM hourly_exchange_rate
+										  )
+					 ) er
+			 ) b LEFT OUTER JOIN
+			 (
+				SELECT date_hour, currency_id, exchange_rate
+				FROM hourly_exchange_rate
+				WHERE LEFT(date_hour, 10) = (	SELECT MAX(LEFT(date_hour, 10))
+												FROM hourly_exchange_rate
+											)
+			 ) c ON b.date_hour = c.date_hour
+					AND b.currency_id = c.currency_id
+		WHERE c.date_hour IS NULL;
+
+	#Prior day
+	INSERT INTO hourly_exchange_rate
+		SELECT b.currency_id, b.exchange_Rate, b.date_hour
+		FROM (
+				SELECT *
+				FROM (                       
+						SELECT CONCAT(dt.dt, ' ', hr.hr) AS date_hour
+						FROM (	SELECT DATE_ADD(MAX(LEFT(date_hour, 10)), INTERVAL -1 DAY) AS dt
+								FROM hourly_exchange_rate
+							 ) dt CROSS JOIN
+							 (
+								SELECT '00:00:00' AS hr UNION ALL
+								SELECT '01:00:00' AS hr UNION ALL
+								SELECT '02:00:00' AS hr UNION ALL
+								SELECT '03:00:00' AS hr UNION ALL
+								SELECT '04:00:00' AS hr UNION ALL
+								SELECT '05:00:00' AS hr UNION ALL
+								SELECT '06:00:00' AS hr UNION ALL
+								SELECT '07:00:00' AS hr UNION ALL
+								SELECT '08:00:00' AS hr UNION ALL
+								SELECT '09:00:00' AS hr UNION ALL
+								SELECT '10:00:00' AS hr UNION ALL
+								SELECT '11:00:00' AS hr UNION ALL
+								SELECT '12:00:00' AS hr UNION ALL
+								SELECT '13:00:00' AS hr UNION ALL
+								SELECT '14:00:00' AS hr UNION ALL
+								SELECT '15:00:00' AS hr UNION ALL
+								SELECT '16:00:00' AS hr UNION ALL
+								SELECT '17:00:00' AS hr UNION ALL
+								SELECT '18:00:00' AS hr UNION ALL
+								SELECT '19:00:00' AS hr UNION ALL
+								SELECT '20:00:00' AS hr UNION ALL
+								SELECT '21:00:00' AS hr UNION ALL
+								SELECT '22:00:00' AS hr UNION ALL
+								SELECT '23:00:00' AS hr
+							 ) hr
+					 ) a CROSS JOIN
+					 (
+						SELECT DISTINCT currency_id, exchange_rate
+						FROM hourly_exchange_rate
+						WHERE date_hour = ( SELECT MAX(date_hour)
+											FROM hourly_exchange_rate
+											WHERE LEFT(date_hour, 10) = (	SELECT DATE_ADD(MAX(LEFT(date_hour, 10)), INTERVAL -1 DAY) AS dt
+																			FROM hourly_exchange_rate
+																		)
+										  )
+					 ) er
+			 ) b LEFT OUTER JOIN
+			 (
+				SELECT date_hour, currency_id, exchange_rate
+				FROM hourly_exchange_rate
+				WHERE LEFT(date_hour, 10) = (	SELECT DATE_ADD(MAX(LEFT(date_hour, 10)), INTERVAL -1 DAY)
+												FROM hourly_exchange_rate
+											)
+			 ) c ON b.date_hour = c.date_hour
+					AND b.currency_id = c.currency_id
+		WHERE c.date_hour IS NULL;
+
+END $$
+
+
+
 
 
 CREATE PROCEDURE `sp_most_traded_currencies`(p_username VARCHAR(15), p_year_month DATE, p_length VARCHAR(15))
@@ -812,13 +964,13 @@ BEGIN
 	SELECT c.exchange, CAST((c.rate_mid - d.rate_mid) / (c.rate_mid / 100) AS DECIMAL(5, 2)) AS 'diff'
     FROM (
 			SELECT c2.code AS exchange, 1 / e1.exchange_rate * e2.exchange_rate AS rate_mid	
-			FROM daily_exchange_rate e1 CROSS JOIN daily_exchange_rate e2 INNER JOIN Currency c1 ON e1.currency_id = c1.id INNER JOIN Currency c2 ON e2.currency_id = c2.id
+			FROM daily_exchange_rate e1 CROSS JOIN daily_exchange_rate e2 INNER JOIN currency c1 ON e1.currency_id = c1.id INNER JOIN currency c2 ON e2.currency_id = c2.id
 			WHERE e1.currency_id <> e2.currency_id AND e1.date = e2.date AND c1.code = p_base_currency_code
 					AND e1.date = @to_date
 		 ) c INNER JOIN
 		 (
 			SELECT c2.code AS exchange, 1 / e1.exchange_rate * e2.exchange_rate AS rate_mid	
-			FROM daily_exchange_rate e1 CROSS JOIN daily_exchange_rate e2 INNER JOIN Currency c1 ON e1.currency_id = c1.id INNER JOIN Currency c2 ON e2.currency_id = c2.id
+			FROM daily_exchange_rate e1 CROSS JOIN daily_exchange_rate e2 INNER JOIN currency c1 ON e1.currency_id = c1.id INNER JOIN currency c2 ON e2.currency_id = c2.id
 			WHERE e1.currency_id <> e2.currency_id AND e1.date = e2.date AND c1.code = p_base_currency_code
 					AND e1.date = @from_date
 		 ) d ON c.exchange = d.exchange
@@ -830,6 +982,77 @@ END $$
 CREATE PROCEDURE `sp_past_performance_table`(p_base_currency_code CHAR(3))
 BEGIN
     
+	DROP TEMPORARY TABLE IF EXISTS c;
+	CREATE TEMPORARY TABLE c AS ( 
+			SELECT c2.code AS exchange, 1 / e1.exchange_rate * e2.exchange_rate AS rate_mid
+			FROM hourly_exchange_rate e1 CROSS JOIN hourly_exchange_rate e2 INNER JOIN currency c1 ON e1.currency_id = c1.id INNER JOIN currency c2 ON e2.currency_id = c2.id
+			WHERE e1.currency_id <> e2.currency_id AND e1.date_hour = e2.date_hour AND c1.code = p_base_currency_code
+				AND e1.date_hour = ( SELECT MAX(date_hour) FROM hourly_exchange_rate )
+	);
+	DROP TEMPORARY TABLE IF EXISTS d1;
+	CREATE TEMPORARY TABLE d1 AS ( 
+			SELECT c2.code AS exchange, 1 / e1.exchange_rate * e2.exchange_rate AS rate_mid	
+			FROM daily_exchange_rate e1 CROSS JOIN daily_exchange_rate e2 INNER JOIN currency c1 ON e1.currency_id = c1.id INNER JOIN currency c2 ON e2.currency_id = c2.id
+			WHERE e1.currency_id <> e2.currency_id AND e1.date = e2.date AND c1.code = p_base_currency_code
+					AND e1.date = DATE_ADD(( SELECT MAX(date) FROM daily_exchange_rate ), INTERVAL - 3 DAY)
+	);
+	DROP TEMPORARY TABLE IF EXISTS d2;
+	CREATE TEMPORARY TABLE d2 AS ( 
+			SELECT c2.code AS exchange, 1 / e1.exchange_rate * e2.exchange_rate AS rate_mid	
+			FROM daily_exchange_rate e1 CROSS JOIN daily_exchange_rate e2 INNER JOIN currency c1 ON e1.currency_id = c1.id INNER JOIN currency c2 ON e2.currency_id = c2.id
+			WHERE e1.currency_id <> e2.currency_id AND e1.date = e2.date AND c1.code = p_base_currency_code
+					AND e1.date = DATE_ADD(( SELECT MAX(date) FROM daily_exchange_rate ), INTERVAL - 1 WEEK)
+	);
+	DROP TEMPORARY TABLE IF EXISTS d3;
+	CREATE TEMPORARY TABLE d3 AS ( 
+			SELECT c2.code AS exchange, 1 / e1.exchange_rate * e2.exchange_rate AS rate_mid	
+			FROM daily_exchange_rate e1 CROSS JOIN daily_exchange_rate e2 INNER JOIN currency c1 ON e1.currency_id = c1.id INNER JOIN currency c2 ON e2.currency_id = c2.id
+			WHERE e1.currency_id <> e2.currency_id AND e1.date = e2.date AND c1.code = p_base_currency_code
+					AND e1.date = DATE_ADD(( SELECT MAX(date) FROM daily_exchange_rate ), INTERVAL - 1 MONTH)
+	);
+	DROP TEMPORARY TABLE IF EXISTS d4;
+	CREATE TEMPORARY TABLE d4 AS ( 
+			SELECT c2.code AS exchange, 1 / e1.exchange_rate * e2.exchange_rate AS rate_mid	
+			FROM daily_exchange_rate e1 CROSS JOIN daily_exchange_rate e2 INNER JOIN currency c1 ON e1.currency_id = c1.id INNER JOIN currency c2 ON e2.currency_id = c2.id
+			WHERE e1.currency_id <> e2.currency_id AND e1.date = e2.date AND c1.code = p_base_currency_code
+					AND e1.date = DATE_ADD(( SELECT MAX(date) FROM daily_exchange_rate ), INTERVAL - 3 MONTH)
+	);
+	DROP TEMPORARY TABLE IF EXISTS d5;
+	CREATE TEMPORARY TABLE d5 AS ( 
+			SELECT c2.code AS exchange, 1 / e1.exchange_rate * e2.exchange_rate AS rate_mid	
+			FROM daily_exchange_rate e1 CROSS JOIN daily_exchange_rate e2 INNER JOIN currency c1 ON e1.currency_id = c1.id INNER JOIN currency c2 ON e2.currency_id = c2.id
+			WHERE e1.currency_id <> e2.currency_id AND e1.date = e2.date AND c1.code = p_base_currency_code
+					AND e1.date = DATE_ADD(( SELECT MAX(date) FROM daily_exchange_rate ), INTERVAL - 1 YEAR)
+	);
+	DROP TEMPORARY TABLE IF EXISTS d6;
+	CREATE TEMPORARY TABLE d6 AS ( 
+			SELECT c2.code AS exchange, 1 / e1.exchange_rate * e2.exchange_rate AS rate_mid	
+			FROM daily_exchange_rate e1 CROSS JOIN daily_exchange_rate e2 INNER JOIN currency c1 ON e1.currency_id = c1.id INNER JOIN currency c2 ON e2.currency_id = c2.id
+			WHERE e1.currency_id <> e2.currency_id AND e1.date = e2.date AND c1.code = p_base_currency_code
+					AND e1.date = ( SELECT MIN(date) FROM daily_exchange_rate )
+	);
+
+	SELECT c.exchange, CAST((c.rate_mid - d1.rate_mid) / (c.rate_mid / 100) AS DECIMAL(5, 2)) AS 'diff3day',
+					   CAST((c.rate_mid - d2.rate_mid) / (c.rate_mid / 100) AS DECIMAL(5, 2)) AS 'diff1week',
+                       CAST((c.rate_mid - d3.rate_mid) / (c.rate_mid / 100) AS DECIMAL(5, 2)) AS 'diff1month',
+                       CAST((c.rate_mid - d4.rate_mid) / (c.rate_mid / 100) AS DECIMAL(5, 2)) AS 'diff3month',
+                       CAST((c.rate_mid - d5.rate_mid) / (c.rate_mid / 100) AS DECIMAL(5, 2)) AS 'diff1year',
+                       CAST((c.rate_mid - d6.rate_mid) / (c.rate_mid / 100) AS DECIMAL(5, 2)) AS 'diffmax'
+    FROM c 
+		INNER JOIN d1 
+			ON c.exchange = d1.exchange 
+		INNER JOIN d2 
+			ON c.exchange = d2.exchange 
+		INNER JOIN d3 
+			ON c.exchange = d3.exchange 
+		INNER JOIN d4 
+			ON c.exchange = d4.exchange 
+		INNER JOIN d5 
+			ON c.exchange = d5.exchange 
+		INNER JOIN d6 
+			ON c.exchange = d6.exchange;
+
+    /*
 	SELECT c.exchange, CAST((c.rate_mid - d1.rate_mid) / (c.rate_mid / 100) AS DECIMAL(5, 2)) AS 'diff3day',
 					   CAST((c.rate_mid - d2.rate_mid) / (c.rate_mid / 100) AS DECIMAL(5, 2)) AS 'diff1week',
                        CAST((c.rate_mid - d3.rate_mid) / (c.rate_mid / 100) AS DECIMAL(5, 2)) AS 'diff1month',
@@ -838,46 +1061,47 @@ BEGIN
                        CAST((c.rate_mid - d6.rate_mid) / (c.rate_mid / 100) AS DECIMAL(5, 2)) AS 'diffmax'
     FROM (
 			SELECT c2.code AS exchange, 1 / e1.exchange_rate * e2.exchange_rate AS rate_mid
-			FROM hourly_exchange_rate e1 CROSS JOIN hourly_exchange_rate e2 INNER JOIN Currency c1 ON e1.currency_id = c1.id INNER JOIN Currency c2 ON e2.currency_id = c2.id
+			FROM hourly_exchange_rate e1 CROSS JOIN hourly_exchange_rate e2 INNER JOIN currency c1 ON e1.currency_id = c1.id INNER JOIN currency c2 ON e2.currency_id = c2.id
 			WHERE e1.currency_id <> e2.currency_id AND e1.date_hour = e2.date_hour AND c1.code = p_base_currency_code
 				AND e1.date_hour = ( SELECT MAX(date_hour) FROM hourly_exchange_rate )
 		 ) c INNER JOIN
 		 (
 			SELECT c2.code AS exchange, 1 / e1.exchange_rate * e2.exchange_rate AS rate_mid	
-			FROM daily_exchange_rate e1 CROSS JOIN daily_exchange_rate e2 INNER JOIN Currency c1 ON e1.currency_id = c1.id INNER JOIN Currency c2 ON e2.currency_id = c2.id
+			FROM daily_exchange_rate e1 CROSS JOIN daily_exchange_rate e2 INNER JOIN currency c1 ON e1.currency_id = c1.id INNER JOIN currency c2 ON e2.currency_id = c2.id
 			WHERE e1.currency_id <> e2.currency_id AND e1.date = e2.date AND c1.code = p_base_currency_code
 					AND e1.date = DATE_ADD(( SELECT MAX(date) FROM daily_exchange_rate ), INTERVAL - 3 DAY)
 		 ) d1 ON c.exchange = d1.exchange INNER JOIN
 		 (
 			SELECT c2.code AS exchange, 1 / e1.exchange_rate * e2.exchange_rate AS rate_mid	
-			FROM daily_exchange_rate e1 CROSS JOIN daily_exchange_rate e2 INNER JOIN Currency c1 ON e1.currency_id = c1.id INNER JOIN Currency c2 ON e2.currency_id = c2.id
+			FROM daily_exchange_rate e1 CROSS JOIN daily_exchange_rate e2 INNER JOIN currency c1 ON e1.currency_id = c1.id INNER JOIN currency c2 ON e2.currency_id = c2.id
 			WHERE e1.currency_id <> e2.currency_id AND e1.date = e2.date AND c1.code = p_base_currency_code
 					AND e1.date = DATE_ADD(( SELECT MAX(date) FROM daily_exchange_rate ), INTERVAL - 1 WEEK)
 		 ) d2 ON c.exchange = d2.exchange INNER JOIN
 		 (
 			SELECT c2.code AS exchange, 1 / e1.exchange_rate * e2.exchange_rate AS rate_mid	
-			FROM daily_exchange_rate e1 CROSS JOIN daily_exchange_rate e2 INNER JOIN Currency c1 ON e1.currency_id = c1.id INNER JOIN Currency c2 ON e2.currency_id = c2.id
+			FROM daily_exchange_rate e1 CROSS JOIN daily_exchange_rate e2 INNER JOIN currency c1 ON e1.currency_id = c1.id INNER JOIN currency c2 ON e2.currency_id = c2.id
 			WHERE e1.currency_id <> e2.currency_id AND e1.date = e2.date AND c1.code = p_base_currency_code
 					AND e1.date = DATE_ADD(( SELECT MAX(date) FROM daily_exchange_rate ), INTERVAL - 1 MONTH)
 		 ) d3 ON c.exchange = d3.exchange INNER JOIN
 		 (
 			SELECT c2.code AS exchange, 1 / e1.exchange_rate * e2.exchange_rate AS rate_mid	
-			FROM daily_exchange_rate e1 CROSS JOIN daily_exchange_rate e2 INNER JOIN Currency c1 ON e1.currency_id = c1.id INNER JOIN Currency c2 ON e2.currency_id = c2.id
+			FROM daily_exchange_rate e1 CROSS JOIN daily_exchange_rate e2 INNER JOIN currency c1 ON e1.currency_id = c1.id INNER JOIN currency c2 ON e2.currency_id = c2.id
 			WHERE e1.currency_id <> e2.currency_id AND e1.date = e2.date AND c1.code = p_base_currency_code
 					AND e1.date = DATE_ADD(( SELECT MAX(date) FROM daily_exchange_rate ), INTERVAL - 3 MONTH)
 		 ) d4 ON c.exchange = d4.exchange INNER JOIN
 		 (
 			SELECT c2.code AS exchange, 1 / e1.exchange_rate * e2.exchange_rate AS rate_mid	
-			FROM daily_exchange_rate e1 CROSS JOIN daily_exchange_rate e2 INNER JOIN Currency c1 ON e1.currency_id = c1.id INNER JOIN Currency c2 ON e2.currency_id = c2.id
+			FROM daily_exchange_rate e1 CROSS JOIN daily_exchange_rate e2 INNER JOIN currency c1 ON e1.currency_id = c1.id INNER JOIN currency c2 ON e2.currency_id = c2.id
 			WHERE e1.currency_id <> e2.currency_id AND e1.date = e2.date AND c1.code = p_base_currency_code
 					AND e1.date = DATE_ADD(( SELECT MAX(date) FROM daily_exchange_rate ), INTERVAL - 1 YEAR)
 		 ) d5 ON c.exchange = d5.exchange INNER JOIN
 		 (
 			SELECT c2.code AS exchange, 1 / e1.exchange_rate * e2.exchange_rate AS rate_mid	
-			FROM daily_exchange_rate e1 CROSS JOIN daily_exchange_rate e2 INNER JOIN Currency c1 ON e1.currency_id = c1.id INNER JOIN Currency c2 ON e2.currency_id = c2.id
+			FROM daily_exchange_rate e1 CROSS JOIN daily_exchange_rate e2 INNER JOIN currency c1 ON e1.currency_id = c1.id INNER JOIN currency c2 ON e2.currency_id = c2.id
 			WHERE e1.currency_id <> e2.currency_id AND e1.date = e2.date AND c1.code = p_base_currency_code
 					AND e1.date = ( SELECT MIN(date) FROM daily_exchange_rate )
 		 ) d6 ON c.exchange = d6.exchange;
+      */   
          
 END $$
 
